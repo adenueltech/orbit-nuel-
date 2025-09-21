@@ -11,8 +11,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Eye, EyeOff, Mail, Lock, User, Building, ArrowRight, Loader2, CheckCircle } from "lucide-react"
+import { Eye, EyeOff, Mail, Lock, User, Building, ArrowRight, Loader2, CheckCircle, ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { authToasts } from "@/lib/toast"
 
 export function SignupForm() {
   const [showPassword, setShowPassword] = useState(false)
@@ -34,14 +35,47 @@ export function SignupForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match")
+      authToasts.error('Passwords do not match. Please try again.')
       return
     }
     setIsLoading(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setIsLoading(false)
-    router.push("/dashboard")
+    try {
+      const response = await fetch('http://localhost:3001/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password,
+          company: formData.company,
+          phone: '', // Add phone if needed
+          hireDate: new Date().toISOString(),
+          role: 'admin', // Default role for signup
+        }),
+      })
+      const data = await response.json()
+      if (response.ok) {
+        authToasts.signupSuccess()
+        setTimeout(() => router.push('/auth/login'), 1500)
+      } else {
+        // Handle different error scenarios
+        if (response.status === 409) {
+          authToasts.emailExists()
+        } else if (response.status >= 500) {
+          authToasts.serverError()
+        } else {
+          authToasts.signupError(data.message)
+        }
+      }
+    } catch (error) {
+      console.error('Signup error:', error)
+      authToasts.networkError()
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const passwordStrength = (password: string) => {
@@ -89,6 +123,14 @@ export function SignupForm() {
 
   return (
     <div className="space-y-6">
+      {/* Back Button */}
+      <div className="flex items-center justify-start">
+        <Link href="/" className="flex items-center space-x-2 text-muted hover:text-foreground transition-colors">
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Home</span>
+        </Link>
+      </div>
+
       {/* Header */}
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold text-foreground">Create your account</h1>

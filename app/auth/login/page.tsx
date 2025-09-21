@@ -38,7 +38,7 @@ export default function LoginPage() {
                   />
                 </svg>
               </div>
-              <span className="text-white/90">Multi-tenant architecture with secure data isolation</span>
+              <span className="text-foreground/90">Multi-tenant architecture with secure data isolation</span>
             </div>
             <div className="flex items-center space-x-3">
               <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">

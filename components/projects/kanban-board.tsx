@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -37,82 +37,6 @@ interface Task {
   tags: string[]
 }
 
-// Mock data
-const mockTasks: Task[] = [
-  {
-    id: "1",
-    title: "Design new login screen",
-    description: "Create a modern and accessible login interface",
-    status: "todo",
-    priority: "high",
-    assignee: { name: "Sarah Johnson", avatar: "/professional-woman-ceo.png" },
-    dueDate: "Dec 15, 2024",
-    comments: 3,
-    attachments: 2,
-    tags: ["UI", "Design"],
-  },
-  {
-    id: "2",
-    title: "Implement user authentication",
-    description: "Set up JWT authentication with refresh tokens",
-    status: "todo",
-    priority: "high",
-    assignee: { name: "Michael Chen", avatar: "/professional-project-manager.png" },
-    dueDate: "Dec 18, 2024",
-    comments: 1,
-    attachments: 0,
-    tags: ["Backend", "Security"],
-  },
-  {
-    id: "3",
-    title: "Create dashboard wireframes",
-    description: "Design wireframes for the main dashboard layout",
-    status: "in-progress",
-    priority: "medium",
-    assignee: { name: "Amara Okafor", avatar: "/professional-woman-cto.png" },
-    dueDate: "Dec 12, 2024",
-    comments: 5,
-    attachments: 3,
-    tags: ["UX", "Wireframes"],
-  },
-  {
-    id: "4",
-    title: "Setup CI/CD pipeline",
-    description: "Configure automated testing and deployment",
-    status: "in-progress",
-    priority: "medium",
-    assignee: { name: "David Rodriguez", avatar: "/professional-man-operations-director.jpg" },
-    dueDate: "Dec 20, 2024",
-    comments: 2,
-    attachments: 1,
-    tags: ["DevOps", "Automation"],
-  },
-  {
-    id: "5",
-    title: "Write API documentation",
-    description: "Document all REST API endpoints",
-    status: "review",
-    priority: "low",
-    assignee: { name: "Fatima Al-Rashid", avatar: "/professional-woman-founder.png" },
-    dueDate: "Dec 10, 2024",
-    comments: 4,
-    attachments: 1,
-    tags: ["Documentation", "API"],
-  },
-  {
-    id: "6",
-    title: "User testing session",
-    description: "Conduct usability testing with 10 users",
-    status: "done",
-    priority: "high",
-    assignee: { name: "James Mitchell", avatar: "/professional-man-vp-engineering.jpg" },
-    dueDate: "Dec 5, 2024",
-    comments: 8,
-    attachments: 5,
-    tags: ["Testing", "UX"],
-  },
-]
-
 const columns = [
   { id: "todo", title: "To Do", color: "bg-gray-100" },
   { id: "in-progress", title: "In Progress", color: "bg-blue-100" },
@@ -125,7 +49,8 @@ interface KanbanBoardProps {
 }
 
 export function KanbanBoard({ projectId }: KanbanBoardProps) {
-  const [tasks, setTasks] = useState<Task[]>(mockTasks)
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false)
   const [newTask, setNewTask] = useState({
@@ -135,6 +60,45 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
     assignee: "",
     dueDate: "",
   })
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      const token = localStorage.getItem('token')
+      if (!token) return
+
+      try {
+        const response = await fetch('http://localhost:3001/tasks', {
+          headers: { 'Authorization': `Bearer ${token}` },
+        })
+        if (response.ok) {
+          const tasksData = await response.json()
+          // Transform backend data to frontend format
+          const transformedTasks = tasksData.map((task: any) => ({
+            id: task.id.toString(),
+            title: task.title,
+            description: task.description || '',
+            status: task.status,
+            priority: task.priority,
+            assignee: task.assignee ? {
+              name: `${task.assignee.firstName} ${task.assignee.lastName}`,
+              avatar: '/placeholder-user.jpg' // TODO: Add avatar field to user entity
+            } : { name: 'Unassigned', avatar: '/placeholder-user.jpg' },
+            dueDate: task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No due date',
+            comments: 0, // TODO: Add comments system
+            attachments: 0, // TODO: Add attachments system
+            tags: [], // TODO: Add tags system
+          }))
+          setTasks(transformedTasks)
+        }
+      } catch (error) {
+        console.error('Failed to fetch tasks:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTasks()
+  }, [projectId])
 
   const filteredTasks = tasks.filter(
     (task) =>
@@ -155,24 +119,68 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
     }
   }
 
-  const handleCreateTask = () => {
+  const handleCreateTask = async () => {
     if (newTask.title.trim()) {
-      const task: Task = {
-        id: Date.now().toString(),
-        title: newTask.title,
-        description: newTask.description,
-        status: "todo",
-        priority: newTask.priority,
-        assignee: { name: "Sarah Johnson", avatar: "/professional-woman-ceo.png" },
-        dueDate: newTask.dueDate,
-        comments: 0,
-        attachments: 0,
-        tags: [],
+      const token = localStorage.getItem('token')
+      if (!token) return
+
+      try {
+        const response = await fetch('http://localhost:3001/tasks', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            title: newTask.title,
+            description: newTask.description,
+            status: "todo",
+            priority: newTask.priority,
+            dueDate: newTask.dueDate ? new Date(newTask.dueDate).toISOString() : null,
+            projectId: projectId,
+            // TODO: Add organizationId from user context
+          }),
+        })
+
+        if (response.ok) {
+          const newTaskData = await response.json()
+          // Transform and add to local state
+          const transformedTask: Task = {
+            id: newTaskData.id.toString(),
+            title: newTaskData.title,
+            description: newTaskData.description || '',
+            status: newTaskData.status,
+            priority: newTaskData.priority,
+            assignee: newTaskData.assignee ? {
+              name: `${newTaskData.assignee.firstName} ${newTaskData.assignee.lastName}`,
+              avatar: '/placeholder-user.jpg'
+            } : { name: 'Unassigned', avatar: '/placeholder-user.jpg' },
+            dueDate: newTaskData.dueDate ? new Date(newTaskData.dueDate).toLocaleDateString() : 'No due date',
+            comments: 0,
+            attachments: 0,
+            tags: [],
+          }
+          setTasks([...tasks, transformedTask])
+          setNewTask({ title: "", description: "", priority: "medium", assignee: "", dueDate: "" })
+          setIsCreateTaskOpen(false)
+        }
+      } catch (error) {
+        console.error('Failed to create task:', error)
       }
-      setTasks([...tasks, task])
-      setNewTask({ title: "", description: "", priority: "medium", assignee: "", dueDate: "" })
-      setIsCreateTaskOpen(false)
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto"></div>
+            <p className="mt-4 text-muted">Loading tasks...</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

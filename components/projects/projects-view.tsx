@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -12,110 +12,65 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Search, MoreHorizontal, Calendar, Users, Clock, Star, Archive, Edit, Trash2, Eye } from "lucide-react"
 import { NewProjectModal } from "@/components/ui/new-project-modal"
 
-// Mock data
-const projects = [
-  {
-    id: "1",
-    name: "Mobile App Redesign",
-    description: "Complete redesign of the mobile application with new UI/UX patterns",
-    status: "In Progress",
-    priority: "High",
-    progress: 75,
-    dueDate: "Dec 15, 2024",
-    createdAt: "Nov 1, 2024",
-    team: [
-      { name: "Sarah Johnson", avatar: "/professional-woman-ceo.png", role: "PM" },
-      { name: "Michael Chen", avatar: "/professional-project-manager.png", role: "Designer" },
-      { name: "Amara Okafor", avatar: "/professional-woman-cto.png", role: "Developer" },
-    ],
-    tasks: { total: 24, completed: 18 },
-    color: "bg-blue-500",
-  },
-  {
-    id: "2",
-    name: "API Integration",
-    description: "Integrate third-party APIs for payment processing and analytics",
-    status: "In Progress",
-    priority: "Medium",
-    progress: 45,
-    dueDate: "Dec 20, 2024",
-    createdAt: "Nov 5, 2024",
-    team: [
-      { name: "David Rodriguez", avatar: "/professional-man-operations-director.jpg", role: "Lead Dev" },
-      { name: "Fatima Al-Rashid", avatar: "/professional-woman-founder.png", role: "Backend Dev" },
-    ],
-    tasks: { total: 16, completed: 7 },
-    color: "bg-green-500",
-  },
-  {
-    id: "3",
-    name: "Marketing Campaign",
-    description: "Q4 marketing campaign for product launch",
-    status: "Review",
-    priority: "High",
-    progress: 90,
-    dueDate: "Dec 10, 2024",
-    createdAt: "Oct 15, 2024",
-    team: [
-      { name: "James Mitchell", avatar: "/professional-man-vp-engineering.jpg", role: "Marketing Lead" },
-      { name: "Sarah Johnson", avatar: "/professional-woman-ceo.png", role: "Content" },
-    ],
-    tasks: { total: 12, completed: 11 },
-    color: "bg-purple-500",
-  },
-  {
-    id: "4",
-    name: "Database Migration",
-    description: "Migrate from PostgreSQL to distributed database system",
-    status: "Planning",
-    priority: "Low",
-    progress: 30,
-    dueDate: "Jan 5, 2025",
-    createdAt: "Nov 10, 2024",
-    team: [
-      { name: "Michael Chen", avatar: "/professional-project-manager.png", role: "DBA" },
-      { name: "Amara Okafor", avatar: "/professional-woman-cto.png", role: "DevOps" },
-    ],
-    tasks: { total: 20, completed: 6 },
-    color: "bg-orange-500",
-  },
-  {
-    id: "5",
-    name: "Security Audit",
-    description: "Comprehensive security audit and penetration testing",
-    status: "Completed",
-    priority: "High",
-    progress: 100,
-    dueDate: "Nov 30, 2024",
-    createdAt: "Oct 1, 2024",
-    team: [{ name: "David Rodriguez", avatar: "/professional-man-operations-director.jpg", role: "Security Lead" }],
-    tasks: { total: 8, completed: 8 },
-    color: "bg-red-500",
-  },
-  {
-    id: "6",
-    name: "User Onboarding",
-    description: "Improve user onboarding flow and documentation",
-    status: "On Hold",
-    priority: "Medium",
-    progress: 20,
-    dueDate: "Jan 15, 2025",
-    createdAt: "Nov 8, 2024",
-    team: [
-      { name: "Fatima Al-Rashid", avatar: "/professional-woman-founder.png", role: "UX Designer" },
-      { name: "James Mitchell", avatar: "/professional-man-vp-engineering.jpg", role: "Technical Writer" },
-    ],
-    tasks: { total: 15, completed: 3 },
-    color: "bg-cyan-500",
-  },
-]
+interface Project {
+  id: string
+  name: string
+  description: string
+  status: string
+  priority: string
+  progress: number
+  dueDate: string
+  createdAt: string
+  team: any[]
+  tasks: { total: number; completed: number }
+  color: string
+}
 
 export function ProjectsView() {
+  const [projects, setProjects] = useState<Project[]>([])
+  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [priorityFilter, setPriorityFilter] = useState("all")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [showNewProjectModal, setShowNewProjectModal] = useState(false)
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const token = localStorage.getItem('token')
+      if (!token) return
+
+      try {
+        const response = await fetch('http://localhost:3001/projects', {
+          headers: { 'Authorization': `Bearer ${token}` },
+        })
+        if (response.ok) {
+          const projectsData = await response.json()
+          // Transform backend data to frontend format
+          const transformedProjects = projectsData.map((project: any) => ({
+            id: project.id.toString(),
+            name: project.title,
+            description: project.description || '',
+            status: project.status,
+            priority: "Medium", // TODO: Add priority field to project entity
+            progress: 50, // TODO: Calculate actual progress from tasks
+            dueDate: "TBD", // TODO: Add due date field
+            createdAt: new Date(project.createdAt).toLocaleDateString(),
+            team: [], // TODO: Add team members
+            tasks: { total: project.tasks?.length || 0, completed: 0 }, // TODO: Calculate completed tasks
+            color: "bg-blue-500", // TODO: Add color field
+          }))
+          setProjects(transformedProjects)
+        }
+      } catch (error) {
+        console.error('Failed to fetch projects:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProjects()
+  }, [])
 
   const filteredProjects = projects.filter((project) => {
     const matchesSearch =
@@ -154,6 +109,19 @@ export function ProjectsView() {
       default:
         return "bg-gray-100 text-gray-800 border-gray-200"
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto"></div>
+            <p className="mt-4 text-muted">Loading projects...</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

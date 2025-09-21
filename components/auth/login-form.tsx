@@ -10,8 +10,9 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
-import { Eye, EyeOff, Mail, Lock, ArrowRight, Loader2 } from "lucide-react"
+import { Eye, EyeOff, Mail, Lock, ArrowRight, Loader2, ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { authToasts } from "@/lib/toast"
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
@@ -26,13 +27,61 @@ export function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setIsLoading(false)
-    router.push("/dashboard")
+    try {
+      const response = await fetch('http://localhost:3001/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      })
+      const data = await response.json()
+      if (response.ok && data.access_token) {
+        localStorage.setItem('token', data.access_token)
+        localStorage.setItem('user', JSON.stringify(data.user))
+        authToasts.loginSuccess()
+        setTimeout(() => router.push('/dashboard'), 1000)
+      } else {
+        // Handle different error scenarios
+        if (response.status === 400) {
+          // Account not found - specific message from backend
+          if (data.message?.includes('Account not found')) {
+            authToasts.accountNotFound()
+          } else {
+            authToasts.loginError(data.message)
+          }
+        } else if (response.status === 401) {
+          // Invalid credentials
+          authToasts.loginError(data.message)
+        } else if (response.status === 403) {
+          authToasts.unauthorized()
+        } else if (response.status >= 500) {
+          authToasts.serverError()
+        } else {
+          authToasts.loginError(data.message)
+        }
+      }
+    } catch (error) {
+      console.error('Login error:', error)
+      authToasts.networkError()
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
     <div className="space-y-6">
+      {/* Back Button */}
+      <div className="flex items-center justify-start">
+        <Link href="/" className="flex items-center space-x-2 text-muted hover:text-foreground transition-colors">
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Home</span>
+        </Link>
+      </div>
+
       {/* Header */}
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold text-foreground">Welcome back</h1>

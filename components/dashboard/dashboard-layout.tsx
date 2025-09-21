@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -52,13 +52,6 @@ const navigation = [
   { name: "Settings", href: "/dashboard/settings", icon: Settings, current: false },
 ]
 
-const mockUser = {
-  name: "Sarah Johnson",
-  email: "sarah@techstart.africa",
-  avatar: "/professional-woman-ceo.png",
-  role: "Admin",
-  company: "TechStart Africa",
-}
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -67,6 +60,40 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [showNewProjectModal, setShowNewProjectModal] = useState(false)
+  const [user, setUser] = useState<any>(null)
+
+  useEffect(() => {
+    // Fetch user data from API
+    const fetchUser = async () => {
+      const token = localStorage.getItem('token')
+      if (token) {
+        try {
+          const response = await fetch('http://localhost:3001/auth/me', {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          })
+          if (response.ok) {
+            const userData = await response.json()
+            setUser(userData)
+          }
+        } catch (error) {
+          console.error('Failed to fetch user:', error)
+        }
+      }
+    }
+    fetchUser()
+  }, [])
+
+  // Temporary fallback user data
+  const mockUser = {
+    name: "Sarah Johnson",
+    role: "Project Manager",
+    company: "TechCorp Inc.",
+    avatar: "/professional-woman-ceo.png"
+  }
+
+  const currentUser = user || mockUser
 
   return (
     <SidebarProvider>
@@ -80,7 +107,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </div>
               <div>
                 <h2 className="text-lg font-bold text-sidebar-foreground">OrbitNuel</h2>
-                <p className="text-xs text-sidebar-foreground/60">{mockUser.company}</p>
+                <p className="text-xs text-sidebar-foreground/60">{currentUser.company}</p>
               </div>
             </div>
           </SidebarHeader>
@@ -120,12 +147,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <Button variant="ghost" className="w-full justify-start p-2 h-auto">
                   <div className="flex items-center space-x-3">
                     <Avatar className="w-8 h-8">
-                      <AvatarImage src={mockUser.avatar || "/placeholder.svg"} alt={mockUser.name} />
+                      <AvatarImage src={currentUser.avatar || "/placeholder.svg"} alt={currentUser.name} />
                       <AvatarFallback>SJ</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 text-left">
-                      <p className="text-sm font-medium text-sidebar-foreground">{mockUser.name}</p>
-                      <p className="text-xs text-sidebar-foreground/60">{mockUser.role}</p>
+                      <p className="text-sm font-medium text-sidebar-foreground">{currentUser.name}</p>
+                      <p className="text-xs text-sidebar-foreground/60">{currentUser.role}</p>
                     </div>
                     <ChevronDown className="w-4 h-4 text-sidebar-foreground/60" />
                   </div>
@@ -188,7 +215,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 </Button>
 
                 <Avatar className="w-8 h-8">
-                  <AvatarImage src={mockUser.avatar || "/placeholder.svg"} alt={mockUser.name} />
+                  <AvatarImage src={currentUser.avatar || "/placeholder.svg"} alt={currentUser.name} />
                   <AvatarFallback>SJ</AvatarFallback>
                 </Avatar>
               </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -65,130 +65,52 @@ interface FileItem {
   preview?: string
 }
 
-// Mock data
-const mockFiles: FileItem[] = [
-  {
-    id: "1",
-    name: "Design Assets",
-    type: "folder",
-    uploadedBy: { name: "Sarah Johnson", avatar: "/professional-woman-ceo.png" },
-    uploadedAt: "2024-11-15",
-    lastModified: "2024-12-01",
-    shared: true,
-    starred: false,
-    permissions: "admin",
-    project: "Mobile App Redesign",
-    tags: ["design", "assets"],
-  },
-  {
-    id: "2",
-    name: "Project Requirements.pdf",
-    type: "file",
-    fileType: "document",
-    size: "2.4 MB",
-    uploadedBy: { name: "Michael Chen", avatar: "/professional-project-manager.png" },
-    uploadedAt: "2024-11-20",
-    lastModified: "2024-11-25",
-    shared: true,
-    starred: true,
-    permissions: "edit",
-    project: "Mobile App Redesign",
-    tags: ["requirements", "documentation"],
-    preview: "/pdf-document-preview.png",
-  },
-  {
-    id: "3",
-    name: "Homepage Mockup.fig",
-    type: "file",
-    fileType: "other",
-    size: "15.7 MB",
-    uploadedBy: { name: "Amara Okafor", avatar: "/professional-woman-cto.png" },
-    uploadedAt: "2024-11-18",
-    lastModified: "2024-11-30",
-    shared: false,
-    starred: true,
-    permissions: "edit",
-    project: "Mobile App Redesign",
-    tags: ["design", "mockup", "figma"],
-    preview: "/figma-design-mockup.jpg",
-  },
-  {
-    id: "4",
-    name: "Demo Video.mp4",
-    type: "file",
-    fileType: "video",
-    size: "45.2 MB",
-    uploadedBy: { name: "David Rodriguez", avatar: "/professional-man-operations-director.jpg" },
-    uploadedAt: "2024-11-22",
-    lastModified: "2024-11-22",
-    shared: true,
-    starred: false,
-    permissions: "view",
-    project: "Marketing Campaign",
-    tags: ["video", "demo", "marketing"],
-    preview: "/video-thumbnail-preview.jpg",
-  },
-  {
-    id: "5",
-    name: "API Documentation",
-    type: "folder",
-    uploadedBy: { name: "Fatima Al-Rashid", avatar: "/professional-woman-founder.png" },
-    uploadedAt: "2024-11-10",
-    lastModified: "2024-11-28",
-    shared: true,
-    starred: false,
-    permissions: "edit",
-    project: "API Integration",
-    tags: ["documentation", "api"],
-  },
-  {
-    id: "6",
-    name: "User Research.xlsx",
-    type: "file",
-    fileType: "document",
-    size: "1.8 MB",
-    uploadedBy: { name: "James Mitchell", avatar: "/professional-man-vp-engineering.jpg" },
-    uploadedAt: "2024-11-12",
-    lastModified: "2024-11-20",
-    shared: false,
-    starred: false,
-    permissions: "admin",
-    project: "User Onboarding",
-    tags: ["research", "data", "excel"],
-    preview: "/excel-spreadsheet-preview.png",
-  },
-  {
-    id: "7",
-    name: "Brand Guidelines.pdf",
-    type: "file",
-    fileType: "document",
-    size: "8.3 MB",
-    uploadedBy: { name: "Sarah Johnson", avatar: "/professional-woman-ceo.png" },
-    uploadedAt: "2024-10-15",
-    lastModified: "2024-10-15",
-    shared: true,
-    starred: true,
-    permissions: "view",
-    tags: ["brand", "guidelines", "design"],
-    preview: "/brand-guidelines-document.jpg",
-  },
-  {
-    id: "8",
-    name: "Screenshots",
-    type: "folder",
-    uploadedBy: { name: "Michael Chen", avatar: "/professional-project-manager.png" },
-    uploadedAt: "2024-11-25",
-    lastModified: "2024-12-01",
-    shared: false,
-    starred: false,
-    permissions: "edit",
-    project: "Mobile App Redesign",
-    tags: ["screenshots", "testing"],
-  },
-]
-
 export function FilesView() {
-  const [files, setFiles] = useState<FileItem[]>(mockFiles)
+  const [files, setFiles] = useState<FileItem[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchFiles = async () => {
+      const token = localStorage.getItem('token')
+      if (!token) return
+
+      try {
+        const response = await fetch('http://localhost:3001/files', {
+          headers: { 'Authorization': `Bearer ${token}` },
+        })
+        if (response.ok) {
+          const filesData = await response.json()
+          // Transform backend data to frontend format
+          const transformedFiles = filesData.map((file: any) => ({
+            id: file.id.toString(),
+            name: file.name,
+            type: file.type,
+            fileType: file.fileType,
+            size: file.size,
+            uploadedBy: {
+              name: file.uploadedBy ? `${file.uploadedBy.firstName} ${file.uploadedBy.lastName}` : 'Unknown',
+              avatar: '/placeholder-user.jpg' // TODO: Add avatar to user entity
+            },
+            uploadedAt: new Date(file.uploadedAt).toLocaleDateString(),
+            lastModified: new Date(file.lastModified).toLocaleDateString(),
+            shared: file.shared,
+            starred: file.starred,
+            permissions: file.permissions,
+            project: file.project?.title || undefined,
+            tags: file.tags || [],
+            preview: file.preview,
+          }))
+          setFiles(transformedFiles)
+        }
+      } catch (error) {
+        console.error('Failed to fetch files:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchFiles()
+  }, [])
   const [searchQuery, setSearchQuery] = useState("")
   const [typeFilter, setTypeFilter] = useState("all")
   const [projectFilter, setProjectFilter] = useState("all")
@@ -244,23 +166,50 @@ export function FilesView() {
     }
   }
 
-  const handleCreateFolder = () => {
+  const handleCreateFolder = async () => {
     if (newFolderName.trim()) {
-      const newFolder: FileItem = {
-        id: Date.now().toString(),
-        name: newFolderName,
-        type: "folder",
-        uploadedBy: { name: "Sarah Johnson", avatar: "/professional-woman-ceo.png" },
-        uploadedAt: new Date().toISOString().split("T")[0],
-        lastModified: new Date().toISOString().split("T")[0],
-        shared: false,
-        starred: false,
-        permissions: "admin",
-        tags: [],
+      const token = localStorage.getItem('token')
+      if (!token) return
+
+      try {
+        const response = await fetch('http://localhost:3001/files', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name: newFolderName,
+            type: "folder",
+            // TODO: Add organizationId and uploadedById from user context
+          }),
+        })
+
+        if (response.ok) {
+          const newFolderData = await response.json()
+          // Transform and add to local state
+          const newFolder: FileItem = {
+            id: newFolderData.id.toString(),
+            name: newFolderData.name,
+            type: newFolderData.type,
+            uploadedBy: {
+              name: newFolderData.uploadedBy ? `${newFolderData.uploadedBy.firstName} ${newFolderData.uploadedBy.lastName}` : 'Unknown',
+              avatar: '/placeholder-user.jpg'
+            },
+            uploadedAt: new Date(newFolderData.uploadedAt).toLocaleDateString(),
+            lastModified: new Date(newFolderData.lastModified).toLocaleDateString(),
+            shared: newFolderData.shared,
+            starred: newFolderData.starred,
+            permissions: newFolderData.permissions,
+            tags: newFolderData.tags || [],
+          }
+          setFiles([newFolder, ...files])
+          setNewFolderName("")
+          setIsCreateFolderOpen(false)
+        }
+      } catch (error) {
+        console.error('Failed to create folder:', error)
       }
-      setFiles([newFolder, ...files])
-      setNewFolderName("")
-      setIsCreateFolderOpen(false)
     }
   }
 
@@ -287,6 +236,19 @@ export function FilesView() {
   }
 
   const projects = Array.from(new Set(files.filter((f) => f.project).map((f) => f.project)))
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto"></div>
+            <p className="mt-4 text-muted">Loading files...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">

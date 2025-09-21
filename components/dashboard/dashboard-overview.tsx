@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
@@ -20,94 +21,146 @@ import {
   TrendingDown,
 } from "lucide-react"
 
-// Mock data
-const stats = [
-  {
-    title: "Active Projects",
-    value: "12",
-    change: "+2 from last month",
-    icon: Kanban,
-    color: "text-blue-600",
-    trend: "up",
-  },
-  {
-    title: "Team Members",
-    value: "48",
-    change: "+5 new this month",
-    icon: Users,
-    color: "text-green-600",
-    trend: "up",
-  },
-  {
-    title: "Tasks Completed",
-    value: "234",
-    change: "+18% from last month",
-    icon: CheckCircle,
-    color: "text-purple-600",
-    trend: "up",
-  },
-  {
-    title: "Files Shared",
-    value: "1,429",
-    change: "+12% from last month",
-    icon: FileText,
-    color: "text-orange-600",
-    trend: "up",
-  },
-]
-
-const recentProjects = [
-  {
-    name: "Mobile App Redesign",
-    progress: 75,
-    status: "In Progress",
-    dueDate: "Dec 15, 2024",
-    team: 8,
-    priority: "High",
-  },
-  {
-    name: "API Integration",
-    progress: 45,
-    status: "In Progress",
-    dueDate: "Dec 20, 2024",
-    team: 5,
-    priority: "Medium",
-  },
-  {
-    name: "Marketing Campaign",
-    progress: 90,
-    status: "Review",
-    dueDate: "Dec 10, 2024",
-    team: 12,
-    priority: "High",
-  },
-  {
-    name: "Database Migration",
-    progress: 30,
-    status: "Planning",
-    dueDate: "Jan 5, 2025",
-    team: 6,
-    priority: "Low",
-  },
-]
-
-const chartData = [
-  { name: "Jan", tasks: 65, completed: 45 },
-  { name: "Feb", tasks: 78, completed: 62 },
-  { name: "Mar", tasks: 90, completed: 75 },
-  { name: "Apr", tasks: 85, completed: 70 },
-  { name: "May", tasks: 95, completed: 85 },
-  { name: "Jun", tasks: 110, completed: 95 },
-]
-
-const pieData = [
-  { name: "Completed", value: 45, color: "#10b981" },
-  { name: "In Progress", value: 30, color: "#8b5cf6" },
-  { name: "Planning", value: 15, color: "#f59e0b" },
-  { name: "On Hold", value: 10, color: "#ef4444" },
-]
-
 export function DashboardOverview() {
+  const [stats, setStats] = useState([
+    {
+      title: "Active Projects",
+      value: "0",
+      change: "Loading...",
+      icon: Kanban,
+      color: "text-blue-600",
+      trend: "up",
+    },
+    {
+      title: "Team Members",
+      value: "0",
+      change: "Loading...",
+      icon: Users,
+      color: "text-green-600",
+      trend: "up",
+    },
+    {
+      title: "Tasks Completed",
+      value: "0",
+      change: "Loading...",
+      icon: CheckCircle,
+      color: "text-purple-600",
+      trend: "up",
+    },
+    {
+      title: "Files Shared",
+      value: "0",
+      change: "Loading...",
+      icon: FileText,
+      color: "text-orange-600",
+      trend: "up",
+    },
+  ])
+
+  const [recentProjects, setRecentProjects] = useState([])
+  const [chartData, setChartData] = useState([])
+  const [pieData, setPieData] = useState([])
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      const token = localStorage.getItem('token')
+      if (!token) return
+
+      try {
+        // Fetch projects stats
+        const projectsResponse = await fetch('http://localhost:3001/projects/stats/overview', {
+          headers: { 'Authorization': `Bearer ${token}` },
+        })
+        const projectsStats = await projectsResponse.json()
+
+        // Fetch recent projects
+        const recentProjectsResponse = await fetch('http://localhost:3001/projects/recent', {
+          headers: { 'Authorization': `Bearer ${token}` },
+        })
+        const recentProjectsData = await recentProjectsResponse.json()
+
+        // Fetch users count
+        const usersResponse = await fetch('http://localhost:3001/users', {
+          headers: { 'Authorization': `Bearer ${token}` },
+        })
+        const usersData = await usersResponse.json()
+
+        // Fetch tasks count
+        const tasksResponse = await fetch('http://localhost:3001/tasks', {
+          headers: { 'Authorization': `Bearer ${token}` },
+        })
+        const tasksData = await tasksResponse.json()
+
+        // Update stats
+        setStats([
+          {
+            title: "Active Projects",
+            value: projectsStats.activeProjects?.toString() || "0",
+            change: "+2 from last month",
+            icon: Kanban,
+            color: "text-blue-600",
+            trend: "up",
+          },
+          {
+            title: "Team Members",
+            value: usersData.length?.toString() || "0",
+            change: "+5 new this month",
+            icon: Users,
+            color: "text-green-600",
+            trend: "up",
+          },
+          {
+            title: "Tasks Completed",
+            value: tasksData.filter((task: any) => task.status === 'done').length?.toString() || "0",
+            change: "+18% from last month",
+            icon: CheckCircle,
+            color: "text-purple-600",
+            trend: "up",
+          },
+          {
+            title: "Files Shared",
+            value: "0", // TODO: Implement files count
+            change: "+12% from last month",
+            icon: FileText,
+            color: "text-orange-600",
+            trend: "up",
+          },
+        ])
+
+        // Update recent projects
+        setRecentProjects(recentProjectsData.map((project: any) => ({
+          name: project.title,
+          progress: 50, // TODO: Calculate actual progress
+          status: project.status,
+          dueDate: project.updatedAt?.split('T')[0] || 'TBD',
+          team: 1, // TODO: Count team members
+          priority: "Medium", // TODO: Add priority field
+        })))
+
+        // Mock chart data for now
+        setChartData([
+          { name: "Jan", tasks: 65, completed: 45 },
+          { name: "Feb", tasks: 78, completed: 62 },
+          { name: "Mar", tasks: 90, completed: 75 },
+          { name: "Apr", tasks: 85, completed: 70 },
+          { name: "May", tasks: 95, completed: 85 },
+          { name: "Jun", tasks: 110, completed: 95 },
+        ])
+
+        setPieData([
+          { name: "Completed", value: 45, color: "#10b981" },
+          { name: "In Progress", value: 30, color: "#8b5cf6" },
+          { name: "Planning", value: 15, color: "#f59e0b" },
+          { name: "On Hold", value: 10, color: "#ef4444" },
+        ])
+
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error)
+      }
+    }
+
+    fetchDashboardData()
+  }, [])
   return (
     <div className="space-y-8">
       {/* Header */}

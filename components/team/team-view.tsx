@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -23,104 +23,51 @@ import {
   User,
 } from "lucide-react"
 
-// Mock data
-const teamMembers = [
-  {
-    id: "1",
-    name: "Sarah Johnson",
-    email: "sarah@techstart.africa",
-    role: "Admin",
-    department: "Leadership",
-    avatar: "/professional-woman-ceo.png",
-    status: "Active",
-    joinDate: "Jan 15, 2024",
-    location: "Lagos, Nigeria",
-    phone: "+234 801 234 5678",
-    projects: 8,
-    tasksCompleted: 142,
-    lastActive: "2 hours ago",
-  },
-  {
-    id: "2",
-    name: "Michael Chen",
-    email: "michael@techstart.africa",
-    role: "Project Manager",
-    department: "Operations",
-    avatar: "/professional-project-manager.png",
-    status: "Active",
-    joinDate: "Feb 20, 2024",
-    location: "Cape Town, South Africa",
-    phone: "+27 21 123 4567",
-    projects: 5,
-    tasksCompleted: 89,
-    lastActive: "1 hour ago",
-  },
-  {
-    id: "3",
-    name: "Amara Okafor",
-    email: "amara@techstart.africa",
-    role: "Developer",
-    department: "Engineering",
-    avatar: "/professional-woman-cto.png",
-    status: "Active",
-    joinDate: "Mar 10, 2024",
-    location: "Accra, Ghana",
-    phone: "+233 24 567 8901",
-    projects: 6,
-    tasksCompleted: 156,
-    lastActive: "30 minutes ago",
-  },
-  {
-    id: "4",
-    name: "David Rodriguez",
-    email: "david@techstart.africa",
-    role: "Developer",
-    department: "Engineering",
-    avatar: "/professional-man-operations-director.jpg",
-    status: "Active",
-    joinDate: "Apr 5, 2024",
-    location: "Nairobi, Kenya",
-    phone: "+254 70 123 4567",
-    projects: 4,
-    tasksCompleted: 78,
-    lastActive: "5 minutes ago",
-  },
-  {
-    id: "5",
-    name: "Fatima Al-Rashid",
-    email: "fatima@techstart.africa",
-    role: "Designer",
-    department: "Design",
-    avatar: "/professional-woman-founder.png",
-    status: "Away",
-    joinDate: "May 12, 2024",
-    location: "Cairo, Egypt",
-    phone: "+20 10 123 4567",
-    projects: 3,
-    tasksCompleted: 45,
-    lastActive: "2 days ago",
-  },
-  {
-    id: "6",
-    name: "James Mitchell",
-    email: "james@techstart.africa",
-    role: "Marketing Lead",
-    department: "Marketing",
-    avatar: "/professional-man-vp-engineering.jpg",
-    status: "Active",
-    joinDate: "Jun 8, 2024",
-    location: "Johannesburg, South Africa",
-    phone: "+27 11 234 5678",
-    projects: 2,
-    tasksCompleted: 34,
-    lastActive: "1 day ago",
-  },
-]
-
 export function TeamView() {
+  const [teamMembers, setTeamMembers] = useState([])
+  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [roleFilter, setRoleFilter] = useState("all")
   const [departmentFilter, setDepartmentFilter] = useState("all")
+
+  useEffect(() => {
+    const fetchTeamMembers = async () => {
+      const token = localStorage.getItem('token')
+      if (!token) return
+
+      try {
+        const response = await fetch('http://localhost:3001/users', {
+          headers: { 'Authorization': `Bearer ${token}` },
+        })
+        if (response.ok) {
+          const usersData = await response.json()
+          // Transform backend data to frontend format
+          const transformedMembers = usersData.map((user: any) => ({
+            id: user.id.toString(),
+            name: `${user.firstName} ${user.lastName}`,
+            email: user.email,
+            role: user.role || 'Member',
+            department: 'Engineering', // TODO: Add department field to user entity
+            avatar: '/placeholder-user.jpg', // TODO: Add avatar field to user entity
+            status: 'Active', // TODO: Add status field to user entity
+            joinDate: user.hireDate ? new Date(user.hireDate).toLocaleDateString() : 'Unknown',
+            location: 'Unknown', // TODO: Add location field to user entity
+            phone: user.phone || 'Not provided',
+            projects: 0, // TODO: Calculate from projects
+            tasksCompleted: 0, // TODO: Calculate from tasks
+            lastActive: 'Recently', // TODO: Add last active field
+          }))
+          setTeamMembers(transformedMembers)
+        }
+      } catch (error) {
+        console.error('Failed to fetch team members:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTeamMembers()
+  }, [])
 
   const filteredMembers = teamMembers.filter((member) => {
     const matchesSearch =
@@ -155,6 +102,19 @@ export function TeamView() {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto"></div>
+            <p className="mt-4 text-muted">Loading team members...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -177,7 +137,7 @@ export function TeamView() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-foreground">{teamMembers.length}</div>
-            <p className="text-xs text-muted mt-1">+2 this month</p>
+            <p className="text-xs text-muted mt-1">Team members</p>
           </CardContent>
         </Card>
         <Card className="hover-lift">
