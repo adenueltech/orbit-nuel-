@@ -154,6 +154,7 @@ const projectHealthData = [
 export function AnalyticsView() {
   const [timeRange, setTimeRange] = useState("30d")
   const [selectedMetric, setSelectedMetric] = useState("all")
+  const [loading, setLoading] = useState(false)
 
   if (loading) {
     return (
