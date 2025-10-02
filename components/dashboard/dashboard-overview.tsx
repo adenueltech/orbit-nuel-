@@ -195,11 +195,7 @@ export function DashboardOverview() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">
-                {stat.title === "Tasks Completed" ? (
-                  <AnimatedCounter value={Number.parseInt(stat.value.replace(",", ""))} />
-                ) : (
-                  stat.value
-                )}
+                <AnimatedCounter value={Number.parseInt(stat.value.replace(",", ""))} />
               </div>
               <div className="flex items-center mt-1">
                 {stat.trend === "up" ? (

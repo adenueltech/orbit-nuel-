@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
+import { AnimatedCounter } from "@/components/ui/animated-counter"
 import {
   BarChart,
   Bar,
@@ -170,16 +171,16 @@ export function AnalyticsView() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" data-dashboard>
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Analytics & Reports</h1>
-          <p className="text-muted mt-1">Track performance and gain insights into your team's productivity</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Analytics & Reports</h1>
+          <p className="text-muted mt-1 text-sm sm:text-base">Track performance and gain insights into your team's productivity</p>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-full sm:w-32">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -189,19 +190,21 @@ export function AnalyticsView() {
               <SelectItem value="1y">Last year</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline">
-            <Filter className="w-4 h-4 mr-2" />
-            Filter
-          </Button>
-          <Button className="bg-secondary hover:bg-secondary/90">
-            <Download className="w-4 h-4 mr-2" />
-            Export Report
-          </Button>
+          <div className="flex gap-3">
+            <Button variant="outline" className="flex-1 sm:flex-none">
+              <Filter className="w-4 h-4 mr-2" />
+              Filter
+            </Button>
+            <Button className="bg-secondary hover:bg-secondary/90 flex-1 sm:flex-none">
+              <Download className="w-4 h-4 mr-2" />
+              Export Report
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Overview Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {overviewStats.map((stat, index) => (
           <Card key={index} className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -209,7 +212,9 @@ export function AnalyticsView() {
               <stat.icon className={`w-5 h-5 ${stat.color}`} />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-foreground">{stat.value}</div>
+              <div className="text-2xl font-bold text-foreground">
+                <AnimatedCounter value={Number.parseInt(stat.value.replace(",", ""))} />
+              </div>
               <div className="flex items-center mt-1">
                 {stat.trend === "up" ? (
                   <TrendingUp className="w-4 h-4 text-green-600 mr-1" />

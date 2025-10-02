@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { Menu, X, Orbit } from "lucide-react"
 
 export function Navigation() {
@@ -31,11 +32,16 @@ export function Navigation() {
             <a href="#testimonials" className="text-muted hover:text-foreground transition-colors">
               Testimonials
             </a>
-            <Link href="/auth/login">
-              <Button variant="outline" className="mr-2 bg-transparent">
-                Sign In
-              </Button>
-            </Link>
+            <div className="ml-4">
+              <ThemeToggle />
+            </div>
+            <div className="ml-4">
+              <Link href="/auth/login">
+                <Button variant="outline" className="signin-button bg-transparent px-6">
+                  Sign In
+                </Button>
+              </Link>
+            </div>
             <Link href="/trial">
               <Button className="bg-secondary hover:bg-secondary/90">Start Free Trial</Button>
             </Link>
@@ -62,9 +68,13 @@ export function Navigation() {
               <a href="#testimonials" className="text-muted hover:text-foreground transition-colors">
                 Testimonials
               </a>
-              <div className="flex flex-col space-y-2 pt-4">
+              <div className="flex items-center justify-between pt-4 pb-2">
+                <span className="text-sm text-muted-foreground">Theme</span>
+                <ThemeToggle />
+              </div>
+              <div className="flex flex-col space-y-2">
                 <Link href="/auth/login">
-                  <Button variant="outline" className="w-full bg-transparent">
+                  <Button variant="outline" className="signin-button w-full bg-transparent">
                     Sign In
                   </Button>
                 </Link>

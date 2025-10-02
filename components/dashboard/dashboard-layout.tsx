@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -25,6 +26,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { NewProjectModal } from "@/components/ui/new-project-modal"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 import {
   Home,
   Kanban,
@@ -44,12 +46,12 @@ import {
 } from "lucide-react"
 
 const navigation = [
-  { name: "Overview", href: "/dashboard", icon: Home, current: true },
-  { name: "Projects", href: "/dashboard/projects", icon: Kanban, current: false },
-  { name: "Team", href: "/dashboard/team", icon: Users, current: false },
-  { name: "Files", href: "/dashboard/files", icon: FileText, current: false },
-  { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3, current: false },
-  { name: "Settings", href: "/dashboard/settings", icon: Settings, current: false },
+  { name: "Overview", href: "/dashboard", icon: Home },
+  { name: "Projects", href: "/dashboard/projects", icon: Kanban },
+  { name: "Team", href: "/dashboard/team", icon: Users },
+  { name: "Files", href: "/dashboard/files", icon: FileText },
+  { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
+  { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ]
 
 
@@ -58,6 +60,7 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
+  const pathname = usePathname()
   const [searchQuery, setSearchQuery] = useState("")
   const [showNewProjectModal, setShowNewProjectModal] = useState(false)
   const [user, setUser] = useState<any>(null)
@@ -96,7 +99,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const currentUser = user || mockUser
 
   return (
-    <SidebarProvider>
+    <SidebarProvider data-dashboard>
       <div className="min-h-screen flex w-full bg-background">
         {/* Sidebar */}
         <Sidebar className="border-r border-sidebar-border">
@@ -114,25 +117,30 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
           <SidebarContent className="p-4">
             <SidebarMenu>
-              {navigation.map((item) => (
-                <SidebarMenuItem key={item.name}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={item.current}
-                    className="w-full justify-start hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                  >
-                    <a href={item.href} className="flex items-center space-x-3 px-3 py-2 rounded-lg">
-                      <item.icon className="w-5 h-5" />
-                      <span>{item.name}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {navigation.map((item) => {
+                const isActive = item.href === "/dashboard"
+                  ? pathname === item.href
+                  : pathname.startsWith(item.href)
+                return (
+                  <SidebarMenuItem key={item.name}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive}
+                      className="w-full justify-start hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    >
+                      <a href={item.href} className="flex items-center space-x-3 px-3 py-2 rounded-lg">
+                        <item.icon className="w-5 h-5" />
+                        <span>{item.name}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
             </SidebarMenu>
 
             <div className="mt-8">
               <Button
-                className="w-full bg-sidebar-primary hover:bg-sidebar-primary/90 text-sidebar-primary-foreground"
+                className="w-full bg-secondary hover:bg-secondary/90"
                 onClick={() => setShowNewProjectModal(true)}
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -193,15 +201,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-40">
             <div className="flex items-center justify-between px-6 py-4">
               <div className="flex items-center space-x-4">
-                <SidebarTrigger className="md:hidden" />
-                <div className="relative">
+                <SidebarTrigger />
+                <ThemeToggle />
+                <div className="relative flex-1 max-w-md">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted" />
                   <input
                     type="text"
                     placeholder="Search projects, tasks, files..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 pr-4 py-2 w-64 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-sm"
+                    className="pl-10 pr-4 py-2 w-full bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-sm"
                   />
                 </div>
               </div>

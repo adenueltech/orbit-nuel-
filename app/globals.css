@@ -13,18 +13,18 @@
   --popover-foreground: oklch(0.205 0 0); /* #1f2937 */
   --primary: oklch(0.205 0 0); /* #1f2937 */
   --primary-foreground: oklch(1 0 0); /* #ffffff */
-  --secondary: oklch(0.646 0.222 264.376); /* #8b5cf6 */
+  --secondary: oklch(0.6 0.2 240); /* #3b82f6 - Blue */
   --secondary-foreground: oklch(1 0 0); /* #ffffff */
   --muted: oklch(0.556 0.005 240); /* #6b7280 */
   --muted-foreground: oklch(0.556 0.005 240); /* #6b7280 */
-  --accent: oklch(0.646 0.222 264.376); /* #8b5cf6 */
+  --accent: oklch(0.6 0.2 240); /* #3b82f6 - Blue */
   --accent-foreground: oklch(1 0 0); /* #ffffff */
   --destructive: oklch(0.577 0.245 27.325); /* #dc2626 */
   --destructive-foreground: oklch(1 0 0); /* #ffffff */
   --border: oklch(0.922 0.005 240); /* #e5e7eb */
   --input: oklch(0.97 0.005 240); /* #f1f5f9 */
-  --ring: oklch(0.646 0.222 264.376 / 0.5); /* rgba(139, 92, 246, 0.5) */
-  --chart-1: oklch(0.646 0.222 264.376); /* #8b5cf6 */
+  --ring: oklch(0.6 0.2 240 / 0.5); /* rgba(59, 130, 246, 0.5) - Blue */
+  --chart-1: oklch(0.6 0.2 240); /* #3b82f6 - Blue */
   --chart-2: oklch(0.696 0.17 162.48); /* #f97316 */
   --chart-3: oklch(0.769 0.188 70.08); /* #ea580c */
   --chart-4: oklch(0.577 0.245 27.325); /* #dc2626 */
@@ -32,7 +32,7 @@
   --radius: 0.5rem;
   --sidebar: oklch(0.97 0.005 240); /* #f1f5f9 */
   --sidebar-foreground: oklch(0.205 0 0); /* #1f2937 */
-  --sidebar-primary: oklch(0.646 0.222 264.376); /* #8b5cf6 */
+  --sidebar-primary: oklch(0.6 0.2 240); /* #3b82f6 - Blue */
   --sidebar-primary-foreground: oklch(1 0 0); /* #ffffff */
   --sidebar-accent: oklch(0.769 0.188 70.08); /* #ea580c */
   --sidebar-accent-foreground: oklch(1 0 0); /* #ffffff */
@@ -41,39 +41,40 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
-}
+   /* Professional dark mode with proper contrast and color balance */
+   --background: oklch(0.08 0 0); /* Deep but not pitch black */
+   --foreground: oklch(0.98 0 0); /* Near white for excellent readability */
+   --card: oklch(0.12 0 0); /* Slightly lighter than background for depth */
+   --card-foreground: oklch(0.98 0 0);
+   --popover: oklch(0.12 0 0);
+   --popover-foreground: oklch(0.98 0 0);
+   --primary: oklch(0.7 0.2 240); /* Blue for primary actions */
+   --primary-foreground: oklch(0.98 0 0);
+   --secondary: oklch(0.6 0.2 240); /* Blue for secondary elements */
+   --secondary-foreground: oklch(0.98 0 0);
+   --muted: oklch(0.2 0 0); /* Subtle gray for muted areas */
+   --muted-foreground: oklch(0.7 0 0); /* Readable muted text */
+   --accent: oklch(0.6 0.2 240); /* Blue accent for highlights */
+   --accent-foreground: oklch(0.98 0 0);
+   --destructive: oklch(0.6 0.2 25.723); /* Red for destructive actions */
+   --destructive-foreground: oklch(0.98 0 0);
+   --border: oklch(0.25 0 0); /* Subtle borders */
+   --input: oklch(0.18 0 0); /* Input backgrounds */
+   --ring: oklch(0.7 0.2 240); /* Blue focus rings */
+   --chart-1: oklch(0.7 0.2 240); /* Blue chart colors */
+   --chart-2: oklch(0.7 0.17 162.48);
+   --chart-3: oklch(0.8 0.188 70.08);
+   --chart-4: oklch(0.65 0.265 303.9);
+   --chart-5: oklch(0.7 0.246 16.439);
+   --sidebar: oklch(0.1 0 0); /* Darker sidebar for hierarchy */
+   --sidebar-foreground: oklch(0.95 0 0);
+   --sidebar-primary: oklch(0.7 0.2 240); /* Blue sidebar primary */
+   --sidebar-primary-foreground: oklch(0.98 0 0);
+   --sidebar-accent: oklch(0.6 0.2 240); /* Blue sidebar accent */
+   --sidebar-accent-foreground: oklch(0.98 0 0);
+   --sidebar-border: oklch(0.2 0 0);
+   --sidebar-ring: oklch(0.7 0.2 240); /* Blue sidebar ring */
+ }
 
 @theme inline {
   --font-sans: var(--font-geist-sans);
@@ -123,6 +124,532 @@
   body {
     @apply bg-background text-foreground;
   }
+  button, a, [role="button"] {
+    @apply cursor-pointer;
+  }
+}
+
+/* Professional dark mode with proper color balance */
+.dark {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+.dark .bg-background {
+  background-color: var(--background);
+}
+
+.dark .bg-card {
+  background-color: var(--card);
+}
+
+.dark .text-foreground {
+  color: var(--foreground);
+}
+
+.dark .text-muted {
+  color: var(--muted-foreground);
+}
+
+.dark .text-muted-foreground {
+  color: var(--muted-foreground);
+}
+
+.dark .border {
+  border-color: var(--border);
+}
+
+.dark .bg-input {
+  background-color: var(--input);
+}
+
+/* Ensure buttons maintain their colors in dark mode */
+.dark .bg-primary {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.dark .bg-secondary {
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.dark .bg-accent {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.dark .bg-destructive {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
+.dark .text-muted {
+  color: #f5f5f5 !important;
+}
+
+.dark [class*="text-sidebar-foreground"] {
+  color: #f0f0f0 !important;
+}
+
+/* Professional dark mode button interactions */
+.dark button:hover:not(.bg-secondary):not([data-dashboard]) {
+  background-color: oklch(0.6 0.2 240) !important;
+  border-color: oklch(0.65 0.2 240) !important;
+  color: oklch(0.98 0 0) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px oklch(0.6 0.2 240 / 0.3);
+  transition: all 0.2s ease-in-out;
+}
+
+.dark [data-dashboard] button:hover:not(.bg-secondary):not([data-slot="tabs-trigger"]) {
+  background-color: oklch(0.6 0.2 240) !important;
+  border-color: oklch(0.65 0.2 240) !important;
+  color: oklch(0.98 0 0) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px oklch(0.6 0.2 240 / 0.3);
+  transition: all 0.2s ease-in-out;
+}
+
+.dark button.bg-secondary:hover {
+  background-color: var(--secondary) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.dark button:active:not(.bg-secondary):not([data-dashboard]) {
+  background-color: oklch(0.65 0.2 240) !important;
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 8px oklch(0.6 0.2 240 / 0.4);
+  transition: all 0.1s ease-in-out;
+}
+
+.dark [data-dashboard] button:active:not(.bg-secondary):not([data-slot="tabs-trigger"]) {
+  background-color: oklch(0.65 0.2 240) !important;
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 8px oklch(0.6 0.2 240 / 0.4);
+  transition: all 0.1s ease-in-out;
+}
+
+/* PROPER LANDING PAGE HOVER EFFECTS */
+
+/* Social icons - only change color for standalone icons, not in buttons */
+svg:hover:not(button svg):not([role="button"] svg):not(.lucide) {
+  color: #3b82f6 !important;
+  fill: currentColor !important;
+}
+
+/* Prevent Gmail and other social buttons from getting blue backgrounds */
+button[class*="bg-transparent"]:hover {
+  background-color: transparent !important;
+}
+
+/* Prevent circular elements from changing color on hover */
+circle:hover, [class*="rounded-full"]:hover {
+  fill: currentColor !important;
+  color: inherit !important;
+}
+
+/* Dark mode toggle - leave as default, no custom hover effects */
+
+/* MAXIMUM SPECIFICITY - SIGNIN BUTTON LIGHT MODE */
+.signin-button {
+  background-color: var(--secondary) !important;
+}
+
+html:not(.dark) .signin-button:hover {
+  background: #1d4ed8 !important;
+  background-color: #1d4ed8 !important;
+  color: #000000 !important;
+  border-color: #1d4ed8 !important;
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.4) !important;
+  transition: all 0.2s ease !important;
+}
+
+html:not(.dark) .signin-button:hover * {
+  color: #000000 !important;
+}
+
+html:not(.dark) .signin-button:hover span {
+  color: #000000 !important;
+}
+
+html:not(.dark) .signin-button:hover svg {
+  color: #000000 !important;
+}
+
+/* SIGNIN BUTTON DARK MODE - Match Start Free Trial button styling */
+.dark .signin-button {
+  background-color: var(--secondary) !important;
+  border-color: var(--secondary) !important;
+  color: var(--secondary-foreground) !important;
+}
+
+.dark .signin-button:hover {
+  background-color: var(--secondary) !important;
+  border-color: var(--secondary) !important;
+  color: var(--secondary-foreground) !important;
+  opacity: 0.9;
+  transition: all 0.2s ease !important;
+}
+
+.dark .signin-button:hover * {
+  color: var(--secondary-foreground) !important;
+}
+
+.dark .signin-button:hover span {
+  color: var(--secondary-foreground) !important;
+}
+
+.dark .signin-button:hover svg {
+  color: var(--secondary-foreground) !important;
+}
+
+/* Links - text color changes to blue, but preserve badge colors */
+a:hover:not([data-dashboard] a) {
+  color: #3b82f6 !important;
+  background-color: transparent !important;
+}
+
+/* Preserve badge colors on hover */
+.inline-flex.items-center.px-3.py-1.rounded-full.bg-secondary\/10.text-secondary:hover {
+  color: var(--secondary) !important;
+  background-color: oklch(0.6 0.2 264.376 / 0.1) !important;
+}
+
+.dark .inline-flex.items-center.px-3.py-1.rounded-full.bg-secondary\/10.text-secondary:hover {
+  color: var(--secondary) !important;
+  background-color: oklch(0.6 0.2 264.376 / 0.1) !important;
+}
+
+/* Navigation links specific */
+nav a:hover {
+  color: #3b82f6 !important;
+  background-color: transparent !important;
+}
+
+/* Footer links */
+footer a:hover {
+  color: #3b82f6 !important;
+  background-color: transparent !important;
+}
+
+/* Buttons maintain their own hover states - don't add extra backgrounds */
+
+/* NUCLEAR OPTION - Force orange on ALL elements in select dropdowns within dashboard */
+[data-dashboard] select,
+[data-dashboard] option,
+[data-dashboard] [data-radix-select-content],
+[data-dashboard] [data-radix-select-viewport],
+[data-dashboard] [data-radix-select-item],
+[data-dashboard] [role="option"] {
+  background-color: transparent !important;
+  color: inherit !important;
+  border: none !important;
+}
+
+[data-dashboard] select:hover,
+[data-dashboard] option:hover,
+[data-dashboard] [data-radix-select-content]:hover,
+[data-dashboard] [data-radix-select-viewport]:hover,
+[data-dashboard] [data-radix-select-item]:hover,
+[data-dashboard] [role="option"]:hover,
+[data-dashboard] [data-radix-select-item][data-state="checked"],
+[data-dashboard] [role="option"][data-state="checked"],
+[data-dashboard] [data-radix-select-item]:focus,
+[data-dashboard] [role="option"]:focus {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Additional nuclear selectors */
+[data-dashboard] .radix-select-item,
+[data-dashboard] [data-radix-collection-item],
+[data-dashboard] [data-highlighted],
+[data-dashboard] [data-selected] {
+  background-color: transparent !important;
+  color: inherit !important;
+}
+
+[data-dashboard] .radix-select-item:hover,
+[data-dashboard] [data-radix-collection-item]:hover,
+[data-dashboard] [data-highlighted]:hover,
+[data-dashboard] [data-selected]:hover,
+[data-dashboard] .radix-select-item[data-highlighted],
+[data-dashboard] [data-radix-collection-item][data-highlighted] {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+/* Select trigger hover - blue for dashboard pages */
+[data-dashboard] [data-radix-select-trigger]:hover {
+  background-color: rgba(59, 130, 246, 0.8) !important;
+  border-color: rgba(59, 130, 246, 0.6) !important;
+  color: #ffffff !important;
+}
+
+/* Professional sidebar button interactions - Blue colors for dashboard navigation */
+.sidebar-menu-button:hover:not([data-active="true"]) {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+.sidebar-menu-button[data-active="true"],
+.sidebar-menu-button[data-active="true"]:hover {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+/* Dark mode sidebar buttons - use blue colors */
+.dark .sidebar-menu-button:hover:not([data-active="true"]) {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+.dark .sidebar-menu-button[data-active="true"],
+.dark .sidebar-menu-button[data-active="true"]:hover {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+/* FORCE tab container constraints */
+[data-slot="tabs-list"] {
+  overflow: hidden !important;
+  border-radius: inherit !important;
+}
+
+/* COMPLETE tab override - force centering and orange colors */
+[data-slot="tabs-list"] {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  height: auto !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+[data-slot="tabs-trigger"] {
+  background: transparent !important;
+  color: #000000 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  transition: none !important;
+  position: static !important;
+  z-index: auto !important;
+  margin: 0 !important;
+  padding: 0.5rem 1rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  height: 100% !important;
+  line-height: 1.5 !important;
+  vertical-align: middle !important;
+}
+
+[data-slot="tabs-trigger"]:hover,
+[data-slot="tabs-trigger"][data-state="active"] {
+  background: #ea580c !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+  outline: none !important;
+}
+
+/* Mobile specific adjustments */
+@media (max-width: 768px) {
+  [data-slot="tabs-trigger"] {
+    padding: 0.375rem 0.5rem !important;
+    font-size: 0.8rem !important;
+    min-height: 2.5rem !important;
+  }
+
+  [data-slot="tabs-list"] {
+    flex-wrap: wrap !important;
+    gap: 0 !important;
+  }
+}
+
+/* FORCE black text for inactive tabs in light mode - SPECIFIC to tabs only */
+[data-slot="tabs-trigger"] {
+  background: transparent !important;
+  color: #000000 !important; /* FORCE black text for readability in light mode */
+  border: none !important;
+  border-radius: 0 !important;
+  transition: none !important;
+  position: static !important;
+  z-index: auto !important;
+  margin: 0 !important;
+  padding: 0.5rem 1rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  height: 100% !important;
+  line-height: 1.5 !important;
+  vertical-align: middle !important;
+}
+
+/* Ensure light mode override takes precedence for tabs only */
+html:not(.dark) [data-slot="tabs-trigger"] {
+  color: #000000 !important;
+}
+
+/* Override text-foreground specifically within tabs only */
+[data-slot="tabs-trigger"].text-foreground {
+  color: #000000 !important;
+}
+
+html:not(.dark) [data-slot="tabs-trigger"].text-foreground {
+  color: #000000 !important;
+}
+
+/* Remember Me Checkbox Styling - NO HOVER EFFECTS */
+[data-slot="checkbox"] {
+  cursor: default !important; /* Normal cursor, not pointer */
+  border: 2px solid #d1d5db !important; /* Thick border for visibility */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important; /* Subtle shadow */
+}
+
+/* Remove all hover effects - only show effects on click */
+[data-slot="checkbox"]:hover {
+  background-color: transparent !important;
+  border-color: #d1d5db !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-slot="checkbox"][data-state="checked"] {
+  background-color: #3b82f6 !important; /* Blue background when checked */
+  border-color: #3b82f6 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2) !important; /* Enhanced shadow when checked */
+}
+
+[data-slot="checkbox"][data-state="checked"]:hover {
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Signup Form Checkboxes - Enhanced visibility in light mode */
+html:not(.dark) [data-slot="checkbox"] {
+  border: 2px solid #374151 !important; /* Thick dark border for visibility */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important; /* Professional shadow */
+  background-color: #ffffff !important;
+}
+
+/* PERFECT MOBILE CHECKBOX SIZING - STANDARD 16px WITH PROPER SHAPE */
+@media (max-width: 1024px) {
+  [data-slot="checkbox"] {
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    min-height: 16px !important;
+    max-width: 16px !important;
+    max-height: 16px !important;
+    border-width: 1.5px !important;
+    border-radius: 3px !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    background-color: #ffffff !important;
+    border-color: #d1d5db !important;
+    flex-shrink: 0 !important;
+    transition: all 0.15s ease !important;
+  }
+
+  html:not(.dark) [data-slot="checkbox"] {
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    min-height: 16px !important;
+    max-width: 16px !important;
+    max-height: 16px !important;
+    border-width: 1.5px !important;
+    border-radius: 3px !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+    background-color: #ffffff !important;
+    border-color: #374151 !important;
+    flex-shrink: 0 !important;
+    transition: all 0.15s ease !important;
+  }
+}
+
+html:not(.dark) [data-slot="checkbox"]:focus {
+  outline: 2px solid #3b82f6 !important;
+  outline-offset: 2px !important;
+}
+
+/* Maintain checked state styling */
+html:not(.dark) [data-slot="checkbox"][data-state="checked"] {
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Terms and Privacy Policy text spacing - better mobile layout */
+@media (max-width: 640px) {
+  /* Improve spacing for terms/privacy policy links */
+  label[for="terms"] {
+    line-height: 1.5 !important;
+    margin-top: 0.25rem !important;
+  }
+
+  /* Better wrapping for long terms text */
+  label[for="terms"] a {
+    display: inline-block !important;
+    margin: 0 0.125rem !important;
+  }
+
+  /* Ensure proper spacing between checkbox and text */
+  .flex.items-start.space-x-2 label {
+    margin-left: 0.5rem !important;
+    flex: 1 !important;
+  }
+}
+
+/* Dark mode - keep muted color for inactive tabs */
+.dark [data-slot="tabs-trigger"] {
+  background: transparent !important;
+  color: hsl(var(--muted-foreground)) !important;
+  border-color: transparent !important;
+}
+
+[data-slot="tabs-trigger"]:hover {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+  outline: none !important;
+}
+
+[data-slot="tabs-trigger"][data-state="active"] {
+  background: #ea580c !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+  outline: none !important;
+}
+
+.dark [data-slot="tabs-trigger"]:hover {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+  border-color: #3b82f6 !important;
+}
+
+.dark [data-slot="tabs-trigger"][data-state="active"] {
+  background: #ea580c !important;
+  color: #ffffff !important;
+  border-color: #ea580c !important;
+}
+
+/* Smooth transitions for all elements in dark mode */
+.dark * {
+  transition: all 0.2s ease-in-out;
 }
 
 /* Enhanced animations and micro-interactions for OrbitNuel */
@@ -326,12 +853,23 @@
   animation: notification-slide 0.3s ease-out forwards;
 }
 
-/* Interactive hover effects */
+/* Interactive hover effects - disabled for stat cards */
 .hover-lift {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.hover-lift:hover {
+/* DISABLE hover-lift for ALL cards to prevent upward movement */
+.card:hover,
+.card.hover-lift:hover,
+.hover-lift.card:hover {
+  transform: none !important;
+  box-shadow: none !important;
+  transition: none !important;
+}
+
+button.hover-lift:hover,
+a.hover-lift:hover,
+[role="button"].hover-lift:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
@@ -340,7 +878,9 @@
   transition: transform 0.2s ease-in-out;
 }
 
-.hover-scale:hover {
+button.hover-scale:hover,
+a.hover-scale:hover,
+[role="button"].hover-scale:hover {
   transform: scale(1.05);
 }
 
@@ -348,15 +888,19 @@
   transition: box-shadow 0.3s ease-in-out;
 }
 
-.hover-glow:hover {
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+button.hover-glow:hover,
+a.hover-glow:hover,
+[role="button"].hover-glow:hover {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
 }
 
 .hover-rotate {
   transition: transform 0.3s ease-in-out;
 }
 
-.hover-rotate:hover {
+button.hover-rotate:hover,
+a.hover-rotate:hover,
+[role="button"].hover-rotate:hover {
   transform: rotate(5deg);
 }
 
@@ -421,6 +965,25 @@
   transition-duration: 150ms;
 }
 
+/* Mobile touch targets - ensure minimum 44px */
+@media (max-width: 768px) {
+  button, [role="button"], a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Improve readability on small screens */
+  .text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  .text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+}
+
 /* Focus states */
 .focus-ring {
   @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
@@ -459,7 +1022,7 @@
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -532,4 +1095,73 @@
   opacity: 0;
   transform: translateY(-20px);
   transition: opacity 0.3s ease-in, transform 0.3s ease-in;
+}
+
+/* Light mode: blue buttons have white text, turn black on hover */
+button.bg-secondary {
+  color: #ffffff !important;
+}
+
+button.bg-secondary:hover {
+  color: #000000 !important;
+}
+
+/* Dark mode: blue buttons have black text, turn white on hover */
+.dark button.bg-secondary {
+  color: #000000 !important;
+}
+
+.dark button.bg-secondary:hover {
+  color: #ffffff !important;
+}
+
+/* Other colored buttons in dark mode */
+.dark button[class*="bg-"]:not([class*="bg-white"]):not([class*="bg-transparent"]):not([class*="bg-gray-50"]):not(.bg-secondary) {
+  color: #ffffff !important;
+}
+
+.dark button[class*="bg-"]:not([class*="bg-white"]):not([class*="bg-transparent"]):not([class*="bg-gray-50"]):not(.bg-secondary):hover {
+  color: #ffffff !important;
+}
+
+/* Fix pricing buttons in dark mode - only text color changes on hover */
+.dark button.bg-primary {
+  background-color: oklch(0.6 0.2 240) !important; /* Blue background */
+  color: #ffffff !important;
+}
+
+.dark button.bg-primary:hover {
+  background-color: oklch(0.6 0.2 240) !important; /* Keep same background */
+  color: #000000 !important; /* Only text changes to black */
+  box-shadow: none !important; /* Remove any shadow */
+  transform: none !important; /* Remove any transform */
+}
+
+/* Navigation links - smooth hover in dark mode */
+.dark nav a:hover {
+  background-color: transparent !important;
+  color: #ffffff !important;
+  text-decoration: none !important;
+}
+
+/* EMERGENCY FIX - This Month button white hover issue */
+.hover-lift.bg-transparent:hover,
+button.hover-lift.bg-transparent:hover,
+[variant="outline"].hover-lift.bg-transparent:hover {
+  background-color: #ea580c !important;
+  border-color: #ea580c !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Dark mode emergency fix */
+.dark .hover-lift.bg-transparent:hover,
+.dark button.hover-lift.bg-transparent:hover,
+.dark [variant="outline"].hover-lift.bg-transparent:hover {
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
