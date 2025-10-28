@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -19,23 +19,8 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, MoreHorizontal, Calendar, MessageSquare, Paperclip, Flag, ArrowLeft, Filter, Search } from "lucide-react"
-
-interface Task {
-  id: string
-  title: string
-  description: string
-  status: "todo" | "in-progress" | "review" | "done"
-  priority: "low" | "medium" | "high"
-  assignee: {
-    name: string
-    avatar: string
-  }
-  dueDate: string
-  comments: number
-  attachments: number
-  tags: string[]
-}
+import { Plus, MoreHorizontal, Calendar, MessageSquare, Paperclip, Flag, ArrowLeft, Filter, Search, AlertCircle } from "lucide-react"
+import { useTasks } from "@/lib/queries/tasks"
 
 const columns = [
   { id: "todo", title: "To Do", color: "bg-gray-100" },
@@ -49,8 +34,6 @@ interface KanbanBoardProps {
 }
 
 export function KanbanBoard({ projectId }: KanbanBoardProps) {
-  const [tasks, setTasks] = useState<Task[]>([])
-  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false)
   const [newTask, setNewTask] = useState({
@@ -61,44 +44,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
     dueDate: "",
   })
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      const token = localStorage.getItem('token')
-      if (!token) return
-
-      try {
-        const response = await fetch('http://localhost:3001/tasks', {
-          headers: { 'Authorization': `Bearer ${token}` },
-        })
-        if (response.ok) {
-          const tasksData = await response.json()
-          // Transform backend data to frontend format
-          const transformedTasks = tasksData.map((task: any) => ({
-            id: task.id.toString(),
-            title: task.title,
-            description: task.description || '',
-            status: task.status,
-            priority: task.priority,
-            assignee: task.assignee ? {
-              name: `${task.assignee.firstName} ${task.assignee.lastName}`,
-              avatar: '/placeholder-user.jpg' // TODO: Add avatar field to user entity
-            } : { name: 'Unassigned', avatar: '/placeholder-user.jpg' },
-            dueDate: task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No due date',
-            comments: 0, // TODO: Add comments system
-            attachments: 0, // TODO: Add attachments system
-            tags: [], // TODO: Add tags system
-          }))
-          setTasks(transformedTasks)
-        }
-      } catch (error) {
-        console.error('Failed to fetch tasks:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchTasks()
-  }, [projectId])
+  const { data: tasks = [], isLoading, error } = useTasks(projectId)
 
   const filteredTasks = tasks.filter(
     (task) =>
@@ -121,62 +67,34 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
 
   const handleCreateTask = async () => {
     if (newTask.title.trim()) {
-      const token = localStorage.getItem('token')
-      if (!token) return
-
-      try {
-        const response = await fetch('http://localhost:3001/tasks', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            title: newTask.title,
-            description: newTask.description,
-            status: "todo",
-            priority: newTask.priority,
-            dueDate: newTask.dueDate ? new Date(newTask.dueDate).toISOString() : null,
-            projectId: projectId,
-            // TODO: Add organizationId from user context
-          }),
-        })
-
-        if (response.ok) {
-          const newTaskData = await response.json()
-          // Transform and add to local state
-          const transformedTask: Task = {
-            id: newTaskData.id.toString(),
-            title: newTaskData.title,
-            description: newTaskData.description || '',
-            status: newTaskData.status,
-            priority: newTaskData.priority,
-            assignee: newTaskData.assignee ? {
-              name: `${newTaskData.assignee.firstName} ${newTaskData.assignee.lastName}`,
-              avatar: '/placeholder-user.jpg'
-            } : { name: 'Unassigned', avatar: '/placeholder-user.jpg' },
-            dueDate: newTaskData.dueDate ? new Date(newTaskData.dueDate).toLocaleDateString() : 'No due date',
-            comments: 0,
-            attachments: 0,
-            tags: [],
-          }
-          setTasks([...tasks, transformedTask])
-          setNewTask({ title: "", description: "", priority: "medium", assignee: "", dueDate: "" })
-          setIsCreateTaskOpen(false)
-        }
-      } catch (error) {
-        console.error('Failed to create task:', error)
-      }
+      // TODO: Implement task creation with React Query mutations
+      console.log('Creating task:', newTask)
+      setNewTask({ title: "", description: "", priority: "medium", assignee: "", dueDate: "" })
+      setIsCreateTaskOpen(false)
     }
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto"></div>
             <p className="mt-4 text-muted">Loading tasks...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <p className="text-red-600">Failed to load tasks</p>
+            <p className="text-sm text-muted mt-2">Please try again later</p>
           </div>
         </div>
       </div>

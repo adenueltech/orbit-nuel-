@@ -74,6 +74,40 @@ export class File {
   @Column({ nullable: true })
   preview: string;
 
+  @Column({ nullable: true })
+  storageKey: string;
+
+  @Column({ nullable: true })
+  checksum: string;
+
+  @Column({ nullable: true })
+  mimeType: string;
+
+  @Column({ nullable: true })
+  encoding: string;
+
+  @Column({ nullable: true })
+  thumbnailUrl: string;
+
+  @Column({ nullable: true })
+  previewUrl: string;
+
+  @Column({ default: false })
+  isScanned: boolean;
+
+  @Column({
+    type: 'enum',
+    enum: ['clean', 'infected', 'pending', 'failed'],
+    nullable: true,
+  })
+  scanResult: string;
+
+  @Column({ type: 'json', nullable: true })
+  metadata: object;
+
+  @Column({ default: 1 })
+  version: number;
+
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 

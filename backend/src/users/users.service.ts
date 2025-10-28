@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
@@ -22,8 +23,9 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  async findAll() {
-    return this.usersRepository.find();
+  async findAll(organizationId?: number) {
+    const where = organizationId ? { organization: { id: organizationId } } : {};
+    return this.usersRepository.find({ where, relations: ['organization'] });
   }
 
   async findOne(id: number) {
@@ -41,5 +43,10 @@ export class UsersService {
 
   async remove(id: number) {
     return this.usersRepository.delete(id);
+  }
+
+  async updateProfile(id: number, updateProfileDto: UpdateProfileDto) {
+    await this.usersRepository.update(id, updateProfileDto);
+    return this.findOne(id);
   }
 }

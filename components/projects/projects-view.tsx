@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -9,68 +9,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, Search, MoreHorizontal, Calendar, Users, Clock, Star, Archive, Edit, Trash2, Eye } from "lucide-react"
+import { Plus, Search, MoreHorizontal, Calendar, Users, Clock, Star, Archive, Edit, Trash2, Eye, AlertCircle } from "lucide-react"
 import { NewProjectModal } from "@/components/ui/new-project-modal"
-
-interface Project {
-  id: string
-  name: string
-  description: string
-  status: string
-  priority: string
-  progress: number
-  dueDate: string
-  createdAt: string
-  team: any[]
-  tasks: { total: number; completed: number }
-  color: string
-}
+import { useProjects } from "@/lib/queries/projects"
 
 export function ProjectsView() {
-  const [projects, setProjects] = useState<Project[]>([])
-  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [priorityFilter, setPriorityFilter] = useState("all")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [showNewProjectModal, setShowNewProjectModal] = useState(false)
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      const token = localStorage.getItem('token')
-      if (!token) return
-
-      try {
-        const response = await fetch('http://localhost:3001/projects', {
-          headers: { 'Authorization': `Bearer ${token}` },
-        })
-        if (response.ok) {
-          const projectsData = await response.json()
-          // Transform backend data to frontend format
-          const transformedProjects = projectsData.map((project: any) => ({
-            id: project.id.toString(),
-            name: project.title,
-            description: project.description || '',
-            status: project.status,
-            priority: "Medium", // TODO: Add priority field to project entity
-            progress: 50, // TODO: Calculate actual progress from tasks
-            dueDate: "TBD", // TODO: Add due date field
-            createdAt: new Date(project.createdAt).toLocaleDateString(),
-            team: [], // TODO: Add team members
-            tasks: { total: project.tasks?.length || 0, completed: 0 }, // TODO: Calculate completed tasks
-            color: "bg-blue-500", // TODO: Add color field
-          }))
-          setProjects(transformedProjects)
-        }
-      } catch (error) {
-        console.error('Failed to fetch projects:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchProjects()
-  }, [])
+  const { data: projects = [], isLoading, error } = useProjects()
 
   const filteredProjects = projects.filter((project) => {
     const matchesSearch =
@@ -80,6 +30,33 @@ export function ProjectsView() {
     const matchesPriority = priorityFilter === "all" || project.priority === priorityFilter
     return matchesSearch && matchesStatus && matchesPriority
   })
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto"></div>
+            <p className="mt-4 text-muted">Loading projects...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <p className="text-red-600">Failed to load projects</p>
+            <p className="text-sm text-muted mt-2">Please try again later</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -111,18 +88,6 @@ export function ProjectsView() {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto"></div>
-            <p className="mt-4 text-muted">Loading projects...</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="space-y-6">
@@ -272,13 +237,13 @@ export function ProjectsView() {
                   <span className="text-sm text-muted">Team</span>
                 </div>
                 <div className="flex -space-x-2">
-                  {project.team.slice(0, 3).map((member, index) => (
+                  {project.team.slice(0, 3).map((member: any, index: number) => (
                     <Avatar key={index} className="w-6 h-6 border-2 border-background">
                       <AvatarImage src={member.avatar || "/placeholder.svg"} alt={member.name} />
                       <AvatarFallback className="text-xs">
                         {member.name
                           .split(" ")
-                          .map((n) => n[0])
+                          .map((n: string) => n[0])
                           .join("")}
                       </AvatarFallback>
                     </Avatar>

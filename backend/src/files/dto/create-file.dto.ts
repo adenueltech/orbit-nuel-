@@ -46,4 +46,43 @@ export class CreateFileDto {
   @IsString()
   @IsOptional()
   preview?: string;
+
+  @IsString()
+  @IsOptional()
+  storageKey?: string;
+
+  @IsString()
+  @IsOptional()
+  checksum?: string;
+
+  @IsString()
+  @IsOptional()
+  mimeType?: string;
+
+  @IsString()
+  @IsOptional()
+  encoding?: string;
+
+  @IsString()
+  @IsOptional()
+  thumbnailUrl?: string;
+
+  @IsString()
+  @IsOptional()
+  previewUrl?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isScanned?: boolean = false;
+
+  @IsEnum(['clean', 'infected', 'pending', 'failed'])
+  @IsOptional()
+  scanResult?: string;
+
+  @IsOptional()
+  metadata?: object;
+
+  @IsNumber()
+  @IsOptional()
+  version?: number = 1;
 }

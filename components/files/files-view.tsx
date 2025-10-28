@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -43,74 +43,35 @@ import {
   Star,
   Lock,
   Users,
+  AlertCircle,
 } from "lucide-react"
+import { useFileStore } from "@/lib/stores/file-store"
 
 interface FileItem {
-  id: string
-  name: string
-  type: "folder" | "file"
-  fileType?: "document" | "image" | "video" | "audio" | "archive" | "other"
-  size?: string
+  id: string;
+  name: string;
+  type: string;
+  size?: string;
+  fileType?: string;
+  url?: string;
   uploadedBy: {
-    name: string
-    avatar: string
-  }
-  uploadedAt: string
-  lastModified: string
-  shared: boolean
-  starred: boolean
-  permissions: "view" | "edit" | "admin"
-  project?: string
-  tags: string[]
-  preview?: string
+    name: string;
+    avatar?: string;
+  };
+  uploadedAt: string;
+  lastModified: string;
+  shared?: boolean;
+  starred?: boolean;
+  permissions?: string;
+  tags: string[];
+  project?: string;
+  preview?: string;
 }
 
 export function FilesView() {
-  const [files, setFiles] = useState<FileItem[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchFiles = async () => {
-      const token = localStorage.getItem('token')
-      if (!token) return
-
-      try {
-        const response = await fetch('http://localhost:3001/files', {
-          headers: { 'Authorization': `Bearer ${token}` },
-        })
-        if (response.ok) {
-          const filesData = await response.json()
-          // Transform backend data to frontend format
-          const transformedFiles = filesData.map((file: any) => ({
-            id: file.id.toString(),
-            name: file.name,
-            type: file.type,
-            fileType: file.fileType,
-            size: file.size,
-            uploadedBy: {
-              name: file.uploadedBy ? `${file.uploadedBy.firstName} ${file.uploadedBy.lastName}` : 'Unknown',
-              avatar: '/placeholder-user.jpg' // TODO: Add avatar to user entity
-            },
-            uploadedAt: new Date(file.uploadedAt).toLocaleDateString(),
-            lastModified: new Date(file.lastModified).toLocaleDateString(),
-            shared: file.shared,
-            starred: file.starred,
-            permissions: file.permissions,
-            project: file.project?.title || undefined,
-            tags: file.tags || [],
-            preview: file.preview,
-          }))
-          setFiles(transformedFiles)
-        }
-      } catch (error) {
-        console.error('Failed to fetch files:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchFiles()
-  }, [])
+  const files: FileItem[] = [] // TODO: Replace with actual data fetching
+  const isLoading = false
+  const error = null
   const [searchQuery, setSearchQuery] = useState("")
   const [typeFilter, setTypeFilter] = useState("all")
   const [projectFilter, setProjectFilter] = useState("all")
@@ -203,7 +164,7 @@ export function FilesView() {
             permissions: newFolderData.permissions,
             tags: newFolderData.tags || [],
           }
-          setFiles([newFolder, ...files])
+          // TODO: Update files state
           setNewFolderName("")
           setIsCreateFolderOpen(false)
         }
@@ -232,18 +193,32 @@ export function FilesView() {
   }
 
   const toggleStar = (fileId: string) => {
-    setFiles(files.map((file) => (file.id === fileId ? { ...file, starred: !file.starred } : file)))
+    // TODO: Update file starred status
   }
 
   const projects = Array.from(new Set(files.filter((f) => f.project).map((f) => f.project)))
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto"></div>
             <p className="mt-4 text-muted">Loading files...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <p className="text-red-600">Failed to load files</p>
+            <p className="text-sm text-muted mt-2">Please try again later</p>
           </div>
         </div>
       </div>

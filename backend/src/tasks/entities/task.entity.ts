@@ -57,4 +57,13 @@ export class Task {
 
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
+
+  @Column('json', { nullable: true })
+  comments: { text: string; author: string; timestamp: Date }[];
+
+  @Column('json', { nullable: true })
+  attachments: { filename: string; url: string; uploadedAt: Date }[];
+
+  @Column('simple-array', { nullable: true })
+  tags: string[];
 }

@@ -22,8 +22,12 @@ export class ProjectsService {
     return this.projectsRepository.save(project);
   }
 
-  async findAll() {
-    return this.projectsRepository.find({ relations: ['owner', 'organization', 'tasks'] });
+  async findAll(organizationId?: number) {
+    const where = organizationId ? { organizationId } : {};
+    return this.projectsRepository.find({
+      where,
+      relations: ['owner', 'organization', 'tasks']
+    });
   }
 
   async findOne(id: number) {

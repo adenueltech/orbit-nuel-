@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -42,122 +42,25 @@ import {
   Zap,
   Award,
 } from "lucide-react"
+import { useAnalyticsData } from "@/lib/queries/analytics"
 
-// Mock data
-const overviewStats = [
-  {
-    title: "Total Projects",
-    value: "24",
-    change: "+12%",
-    trend: "up",
-    icon: BarChart3,
-    color: "text-blue-600",
-  },
-  {
-    title: "Active Users",
-    value: "156",
-    change: "+8%",
-    trend: "up",
-    icon: Users,
-    color: "text-green-600",
-  },
-  {
-    title: "Tasks Completed",
-    value: "1,247",
-    change: "+23%",
-    trend: "up",
-    icon: CheckCircle,
-    color: "text-purple-600",
-  },
-  {
-    title: "Avg. Completion Time",
-    value: "3.2 days",
-    change: "-15%",
-    trend: "down",
-    icon: Clock,
-    color: "text-orange-600",
-  },
-]
-
-const projectPerformanceData = [
-  { name: "Jan", completed: 45, inProgress: 23, planned: 12 },
-  { name: "Feb", completed: 52, inProgress: 28, planned: 15 },
-  { name: "Mar", completed: 48, inProgress: 32, planned: 18 },
-  { name: "Apr", completed: 61, inProgress: 25, planned: 14 },
-  { name: "May", completed: 55, inProgress: 35, planned: 20 },
-  { name: "Jun", completed: 67, inProgress: 30, planned: 16 },
-]
-
-const teamProductivityData = [
-  { name: "Week 1", productivity: 85, tasks: 42 },
-  { name: "Week 2", productivity: 78, tasks: 38 },
-  { name: "Week 3", productivity: 92, tasks: 48 },
-  { name: "Week 4", productivity: 88, tasks: 45 },
-  { name: "Week 5", productivity: 95, tasks: 52 },
-  { name: "Week 6", productivity: 82, tasks: 41 },
-]
-
-const taskDistributionData = [
-  { name: "Completed", value: 45, color: "#10b981" },
-  { name: "In Progress", value: 30, color: "#8b5cf6" },
-  { name: "Planning", value: 15, color: "#f59e0b" },
-  { name: "On Hold", value: 10, color: "#ef4444" },
-]
-
-const userActivityData = [
-  { name: "Mon", active: 120, total: 156 },
-  { name: "Tue", active: 132, total: 156 },
-  { name: "Wed", active: 145, total: 156 },
-  { name: "Thu", active: 128, total: 156 },
-  { name: "Fri", active: 142, total: 156 },
-  { name: "Sat", active: 98, total: 156 },
-  { name: "Sun", active: 87, total: 156 },
-]
-
-const topPerformers = [
-  {
-    name: "Sarah Johnson",
-    avatar: "/professional-woman-ceo.png",
-    tasksCompleted: 47,
-    efficiency: 94,
-    projects: 8,
-  },
-  {
-    name: "Michael Chen",
-    avatar: "/professional-project-manager.png",
-    tasksCompleted: 42,
-    efficiency: 91,
-    projects: 6,
-  },
-  {
-    name: "Amara Okafor",
-    avatar: "/professional-woman-cto.png",
-    tasksCompleted: 38,
-    efficiency: 89,
-    projects: 7,
-  },
-  {
-    name: "David Rodriguez",
-    avatar: "/professional-man-operations-director.jpg",
-    tasksCompleted: 35,
-    efficiency: 87,
-    projects: 5,
-  },
-]
-
-const projectHealthData = [
-  { name: "Mobile App", health: 92, color: "#10b981" },
-  { name: "API Integration", health: 78, color: "#f59e0b" },
-  { name: "Marketing", health: 95, color: "#10b981" },
-  { name: "Database", health: 65, color: "#ef4444" },
-]
+// Helper function to calculate percentage change
+const calculateChange = (current: number, previous: number) => {
+  if (previous === 0) return { change: "+0%", trend: "up" };
+  const change = ((current - previous) / previous) * 100;
+  return {
+    change: `${change >= 0 ? '+' : ''}${change.toFixed(0)}%`,
+    trend: change >= 0 ? "up" : "down"
+  };
+};
 
 export function AnalyticsView() {
   const [timeRange, setTimeRange] = useState("30d")
   const [selectedMetric, setSelectedMetric] = useState("all")
-  const [loading, setLoading] = useState(false)
 
-  if (loading) {
+  const { data: analyticsData, isLoading, error } = useAnalyticsData(timeRange)
+
+  if (isLoading) {
     return (
       <div className="space-y-8">
         <div className="flex items-center justify-center h-64">
@@ -169,6 +72,60 @@ export function AnalyticsView() {
       </div>
     )
   }
+
+  if (error) {
+    return (
+      <div className="space-y-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <p className="text-red-600">Failed to load analytics data</p>
+            <p className="text-sm text-muted mt-2">Please try again later</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!analyticsData) {
+    return null
+  }
+
+  // Transform data for display
+  const overviewStats = [
+    {
+      title: "Total Projects",
+      value: analyticsData.overviewStats.totalProjects.toString(),
+      change: "+12%", // This would need previous period data
+      trend: "up",
+      icon: BarChart3,
+      color: "text-blue-600",
+    },
+    {
+      title: "Active Users",
+      value: analyticsData.overviewStats.activeUsers.toString(),
+      change: "+8%",
+      trend: "up",
+      icon: Users,
+      color: "text-green-600",
+    },
+    {
+      title: "Tasks Completed",
+      value: analyticsData.overviewStats.tasksCompleted.toString(),
+      change: "+23%",
+      trend: "up",
+      icon: CheckCircle,
+      color: "text-purple-600",
+    },
+    {
+      title: "Avg. Completion Time",
+      value: `${analyticsData.overviewStats.avgCompletionTime.toFixed(1)} days`,
+      change: "-15%",
+      trend: "down",
+      icon: Clock,
+      color: "text-orange-600",
+    },
+  ]
 
   return (
     <div className="space-y-8" data-dashboard>
@@ -253,7 +210,7 @@ export function AnalyticsView() {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={projectPerformanceData}>
+                  <BarChart data={analyticsData.projectPerformance}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
                     <YAxis />
@@ -280,31 +237,31 @@ export function AnalyticsView() {
                   <ResponsiveContainer width="100%" height={250}>
                     <PieChart>
                       <Pie
-                        data={taskDistributionData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={60}
-                        outerRadius={100}
-                        paddingAngle={5}
-                        dataKey="value"
-                      >
-                        {taskDistributionData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="grid grid-cols-2 gap-4 mt-4">
-                  {taskDistributionData.map((item, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
-                      <span className="text-sm text-muted">{item.name}</span>
-                      <span className="text-sm font-medium text-foreground">{item.value}%</span>
-                    </div>
-                  ))}
-                </div>
+                          data={analyticsData.taskDistribution}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={60}
+                          outerRadius={100}
+                          paddingAngle={5}
+                          dataKey="value"
+                        >
+                          {analyticsData.taskDistribution.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 mt-4">
+                    {analyticsData.taskDistribution.map((item, index) => (
+                      <div key={index} className="flex items-center space-x-2">
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
+                        <span className="text-sm text-muted">{item.name}</span>
+                        <span className="text-sm font-medium text-foreground">{item.value}%</span>
+                      </div>
+                    ))}
+                  </div>
               </CardContent>
             </Card>
           </div>
@@ -320,7 +277,7 @@ export function AnalyticsView() {
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={userActivityData}>
+                <AreaChart data={analyticsData.userActivity}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
@@ -345,7 +302,7 @@ export function AnalyticsView() {
                 <CardDescription>Overall health metrics for active projects</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {projectHealthData.map((project, index) => (
+                {analyticsData.projectHealth.map((project, index) => (
                   <div key={index} className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="font-medium text-foreground">{project.name}</span>
@@ -411,7 +368,7 @@ export function AnalyticsView() {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={teamProductivityData}>
+                  <LineChart data={analyticsData.teamProductivity}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
                     <YAxis />
@@ -433,7 +390,7 @@ export function AnalyticsView() {
                 <CardDescription>This month's highest achievers</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {topPerformers.map((performer, index) => (
+                {analyticsData.topPerformers.map((performer, index) => (
                   <div
                     key={index}
                     className="flex items-center space-x-3 p-3 rounded-lg hover:bg-card/50 transition-colors"
