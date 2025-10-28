@@ -1,29 +1,26 @@
-'use client'
+"use client"
 
-import * as React from 'react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Toaster } from 'sonner'
-import { ThemeProvider } from '@/components/theme-provider'
-
-const queryClient = new QueryClient()
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { useState } from 'react';
+import { OrganizationProvider } from '@/lib/contexts/organization-context';
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const [mounted, setMounted] = React.useState(false)
-
-  React.useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) {
-    return <>{children}</>
-  }
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        retry: 3,
+      },
+    },
+  }));
 
   return (
-    <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <OrganizationProvider>
         {children}
-        <Toaster position="top-right" richColors />
-      </QueryClientProvider>
-    </ThemeProvider>
-  )
+      </OrganizationProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+  );
 }

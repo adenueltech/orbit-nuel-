@@ -33,4 +33,26 @@ export class User {
 
   @Column()
   hireDate: Date;
+
+  @Column({ nullable: true })
+  avatar: string;
+
+  @Column({ nullable: true })
+  department: string;
+
+  @Column({
+    type: 'enum',
+    enum: ['active', 'inactive', 'suspended'],
+    default: 'active',
+  })
+  status: string;
+
+  @Column({ default: 0 })
+  projectsCount: number;
+
+  @Column({ default: 0 })
+  tasksCompleted: number;
+
+  @Column({ type: 'datetime', nullable: true })
+  lastActive: Date;
 }

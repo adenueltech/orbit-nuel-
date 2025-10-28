@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CacheModule } from '@nestjs/cache-manager';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -9,11 +10,24 @@ import { OrganizationsModule } from './organizations/organizations.module';
 import { ProjectsModule } from './projects/projects.module';
 import { TasksModule } from './tasks/tasks.module';
 import { FilesModule } from './files/files.module';
+import { SearchModule } from './search/search.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { SettingsModule } from './settings/settings.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      useFactory: (configService: ConfigService) => ({
+        store: 'redis',
+        host: configService.get('REDIS_HOST', 'localhost'),
+        port: configService.get('REDIS_PORT', 6379),
+        ttl: 300000, // 5 minutes
+      }),
+      inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -31,6 +45,9 @@ import { FilesModule } from './files/files.module';
     ProjectsModule,
     TasksModule,
     FilesModule,
+    SearchModule,
+    NotificationsModule,
+    SettingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

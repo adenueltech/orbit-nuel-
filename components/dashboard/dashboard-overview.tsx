@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
@@ -19,148 +19,78 @@ import {
   Plus,
   ArrowRight,
   TrendingDown,
+  AlertCircle,
 } from "lucide-react"
+import { useDashboardData } from "@/lib/queries/dashboard"
 
 export function DashboardOverview() {
-  const [stats, setStats] = useState([
+  const { data: dashboardData, isLoading, error } = useDashboardData()
+
+  if (isLoading) {
+    return (
+      <div className="space-y-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto"></div>
+            <p className="mt-4 text-muted">Loading dashboard...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <p className="text-red-600">Failed to load dashboard data</p>
+            <p className="text-sm text-muted mt-2">Please try again later</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!dashboardData) {
+    return null
+  }
+
+  const stats = [
     {
       title: "Active Projects",
-      value: "0",
-      change: "Loading...",
+      value: dashboardData.stats.activeProjects.toString(),
+      change: "+2 from last month",
       icon: Kanban,
       color: "text-blue-600",
       trend: "up",
     },
     {
       title: "Team Members",
-      value: "0",
-      change: "Loading...",
+      value: dashboardData.stats.teamMembers.toString(),
+      change: "+5 new this month",
       icon: Users,
       color: "text-green-600",
       trend: "up",
     },
     {
       title: "Tasks Completed",
-      value: "0",
-      change: "Loading...",
+      value: dashboardData.stats.tasksCompleted.toString(),
+      change: "+18% from last month",
       icon: CheckCircle,
       color: "text-purple-600",
       trend: "up",
     },
     {
       title: "Files Shared",
-      value: "0",
-      change: "Loading...",
+      value: dashboardData.stats.filesShared.toString(),
+      change: "+12% from last month",
       icon: FileText,
       color: "text-orange-600",
       trend: "up",
     },
-  ])
-
-  const [recentProjects, setRecentProjects] = useState([])
-  const [chartData, setChartData] = useState([])
-  const [pieData, setPieData] = useState([])
-
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      const token = localStorage.getItem('token')
-      if (!token) return
-
-      try {
-        // Fetch projects stats
-        const projectsResponse = await fetch('http://localhost:3001/projects/stats/overview', {
-          headers: { 'Authorization': `Bearer ${token}` },
-        })
-        const projectsStats = await projectsResponse.json()
-
-        // Fetch recent projects
-        const recentProjectsResponse = await fetch('http://localhost:3001/projects/recent', {
-          headers: { 'Authorization': `Bearer ${token}` },
-        })
-        const recentProjectsData = await recentProjectsResponse.json()
-
-        // Fetch users count
-        const usersResponse = await fetch('http://localhost:3001/users', {
-          headers: { 'Authorization': `Bearer ${token}` },
-        })
-        const usersData = await usersResponse.json()
-
-        // Fetch tasks count
-        const tasksResponse = await fetch('http://localhost:3001/tasks', {
-          headers: { 'Authorization': `Bearer ${token}` },
-        })
-        const tasksData = await tasksResponse.json()
-
-        // Update stats
-        setStats([
-          {
-            title: "Active Projects",
-            value: projectsStats.activeProjects?.toString() || "0",
-            change: "+2 from last month",
-            icon: Kanban,
-            color: "text-blue-600",
-            trend: "up",
-          },
-          {
-            title: "Team Members",
-            value: usersData.length?.toString() || "0",
-            change: "+5 new this month",
-            icon: Users,
-            color: "text-green-600",
-            trend: "up",
-          },
-          {
-            title: "Tasks Completed",
-            value: tasksData.filter((task: any) => task.status === 'done').length?.toString() || "0",
-            change: "+18% from last month",
-            icon: CheckCircle,
-            color: "text-purple-600",
-            trend: "up",
-          },
-          {
-            title: "Files Shared",
-            value: "0", // TODO: Implement files count
-            change: "+12% from last month",
-            icon: FileText,
-            color: "text-orange-600",
-            trend: "up",
-          },
-        ])
-
-        // Update recent projects
-        setRecentProjects(recentProjectsData.map((project: any) => ({
-          name: project.title,
-          progress: 50, // TODO: Calculate actual progress
-          status: project.status,
-          dueDate: project.updatedAt?.split('T')[0] || 'TBD',
-          team: 1, // TODO: Count team members
-          priority: "Medium", // TODO: Add priority field
-        })))
-
-        // Mock chart data for now
-        setChartData([
-          { name: "Jan", tasks: 65, completed: 45 },
-          { name: "Feb", tasks: 78, completed: 62 },
-          { name: "Mar", tasks: 90, completed: 75 },
-          { name: "Apr", tasks: 85, completed: 70 },
-          { name: "May", tasks: 95, completed: 85 },
-          { name: "Jun", tasks: 110, completed: 95 },
-        ])
-
-        setPieData([
-          { name: "Completed", value: 45, color: "#10b981" },
-          { name: "In Progress", value: 30, color: "#8b5cf6" },
-          { name: "Planning", value: 15, color: "#f59e0b" },
-          { name: "On Hold", value: 10, color: "#ef4444" },
-        ])
-
-      } catch (error) {
-        console.error('Failed to fetch dashboard data:', error)
-      }
-    }
-
-    fetchDashboardData()
-  }, [])
+  ]
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -227,7 +157,7 @@ export function DashboardOverview() {
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={chartData}>
+                <BarChart data={dashboardData.taskChartData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
@@ -255,7 +185,7 @@ export function DashboardOverview() {
                 </ProgressRing>
               </div>
               <div className="grid grid-cols-2 gap-4 mt-4">
-                {pieData.map((item, index) => (
+                {dashboardData.projectStatusData.map((item, index) => (
                   <div key={index} className="flex items-center space-x-2 hover-scale">
                     <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
                     <span className="text-sm text-muted">{item.name}</span>
@@ -280,7 +210,7 @@ export function DashboardOverview() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {recentProjects.map((project, index) => (
+              {dashboardData.recentProjects.map((project, index) => (
                 <div
                   key={index}
                   className="space-y-3 p-4 rounded-lg border border-border hover:bg-card/50 transition-colors card-interactive animate-fade-in"

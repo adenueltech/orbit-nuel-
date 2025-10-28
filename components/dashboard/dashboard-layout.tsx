@@ -27,6 +27,9 @@ import {
 } from "@/components/ui/sidebar"
 import { NewProjectModal } from "@/components/ui/new-project-modal"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { GlobalSearch } from "@/components/ui/global-search"
+import { NotificationsDropdown } from "@/components/ui/notifications-dropdown"
+import { useNotificationStore } from "@/lib/stores/notification-store"
 import {
   Home,
   Kanban,
@@ -61,9 +64,9 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname()
-  const [searchQuery, setSearchQuery] = useState("")
   const [showNewProjectModal, setShowNewProjectModal] = useState(false)
   const [user, setUser] = useState<any>(null)
+  const { fetchNotifications, connectSocket, disconnectSocket } = useNotificationStore()
 
   useEffect(() => {
     // Fetch user data from API
@@ -79,6 +82,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           if (response.ok) {
             const userData = await response.json()
             setUser(userData)
+            // Connect to notifications socket and fetch notifications
+            connectSocket(userData.id)
+            fetchNotifications()
           }
         } catch (error) {
           console.error('Failed to fetch user:', error)
@@ -86,7 +92,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       }
     }
     fetchUser()
-  }, [])
+
+    // Cleanup socket connection on unmount
+    return () => {
+      disconnectSocket()
+    }
+  }, [connectSocket, disconnectSocket, fetchNotifications])
 
   // Temporary fallback user data
   const mockUser = {
@@ -203,25 +214,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <div className="flex items-center space-x-4">
                 <SidebarTrigger />
                 <ThemeToggle />
-                <div className="relative flex-1 max-w-md">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted" />
-                  <input
-                    type="text"
-                    placeholder="Search projects, tasks, files..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 pr-4 py-2 w-full bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-sm"
-                  />
-                </div>
+                <GlobalSearch className="flex-1 max-w-md" />
               </div>
 
               <div className="flex items-center space-x-4">
-                <Button variant="ghost" size="sm" className="relative">
-                  <Bell className="w-5 h-5" />
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-destructive rounded-full text-xs flex items-center justify-center text-white">
-                    3
-                  </span>
-                </Button>
+                <NotificationsDropdown />
 
                 <Avatar className="w-8 h-8">
                   <AvatarImage src={currentUser.avatar || "/placeholder.svg"} alt={currentUser.name} />

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -21,53 +21,16 @@ import {
   Shield,
   Crown,
   User,
+  AlertCircle,
 } from "lucide-react"
+import { useTeamMembers } from "@/lib/queries/users"
 
 export function TeamView() {
-  const [teamMembers, setTeamMembers] = useState([])
-  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [roleFilter, setRoleFilter] = useState("all")
   const [departmentFilter, setDepartmentFilter] = useState("all")
 
-  useEffect(() => {
-    const fetchTeamMembers = async () => {
-      const token = localStorage.getItem('token')
-      if (!token) return
-
-      try {
-        const response = await fetch('http://localhost:3001/users', {
-          headers: { 'Authorization': `Bearer ${token}` },
-        })
-        if (response.ok) {
-          const usersData = await response.json()
-          // Transform backend data to frontend format
-          const transformedMembers = usersData.map((user: any) => ({
-            id: user.id.toString(),
-            name: `${user.firstName} ${user.lastName}`,
-            email: user.email,
-            role: user.role || 'Member',
-            department: 'Engineering', // TODO: Add department field to user entity
-            avatar: '/placeholder-user.jpg', // TODO: Add avatar field to user entity
-            status: 'Active', // TODO: Add status field to user entity
-            joinDate: user.hireDate ? new Date(user.hireDate).toLocaleDateString() : 'Unknown',
-            location: 'Unknown', // TODO: Add location field to user entity
-            phone: user.phone || 'Not provided',
-            projects: 0, // TODO: Calculate from projects
-            tasksCompleted: 0, // TODO: Calculate from tasks
-            lastActive: 'Recently', // TODO: Add last active field
-          }))
-          setTeamMembers(transformedMembers)
-        }
-      } catch (error) {
-        console.error('Failed to fetch team members:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchTeamMembers()
-  }, [])
+  const { data: teamMembers = [], isLoading, error } = useTeamMembers()
 
   const filteredMembers = teamMembers.filter((member) => {
     const matchesSearch =
@@ -102,13 +65,27 @@ export function TeamView() {
     }
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto"></div>
             <p className="mt-4 text-muted">Loading team members...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <p className="text-red-600">Failed to load team members</p>
+            <p className="text-sm text-muted mt-2">Please try again later</p>
           </div>
         </div>
       </div>

@@ -43,4 +43,23 @@ export class Project {
 
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
+
+  @Column({
+    type: 'enum',
+    enum: ['low', 'medium', 'high'],
+    default: 'medium',
+  })
+  priority: string;
+
+  @Column('float', { default: 0 })
+  progress: number;
+
+  @Column({ type: 'date', nullable: true })
+  dueDate: Date;
+
+  @Column('json', { nullable: true })
+  teamMembers: number[];
+
+  @Column({ nullable: true })
+  color: string;
 }
