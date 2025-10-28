@@ -31,6 +31,27 @@ export function SettingsView() {
     avatar: "/professional-woman-ceo.png",
   })
 
+  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file')
+        return
+      }
+
+      // Validate file size (1MB max)
+      if (file.size > 1024 * 1024) {
+        alert('File size must be less than 1MB')
+        return
+      }
+
+      // Create object URL for preview
+      const imageUrl = URL.createObjectURL(file)
+      setProfile({ ...profile, avatar: imageUrl })
+    }
+  }
+
   const [company, setCompany] = useState({
     name: "TechStart Africa",
     website: "https://techstart.africa",
@@ -40,7 +61,7 @@ export function SettingsView() {
   })
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-dashboard>
       {/* Header */}
       <div className="animate-slide-up">
         <h1 className="text-3xl font-bold text-foreground">Settings</h1>
@@ -48,7 +69,7 @@ export function SettingsView() {
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6 animate-slide-up stagger-1">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 animate-slide-up stagger-1">
           <TabsTrigger value="profile" className="flex items-center space-x-2">
             <User className="w-4 h-4" />
             <span className="hidden sm:inline">Profile</span>
@@ -95,10 +116,23 @@ export function SettingsView() {
                   </AvatarFallback>
                 </Avatar>
                 <div className="space-y-2">
-                  <Button variant="outline" size="sm">
-                    <Camera className="w-4 h-4 mr-2" />
-                    Change Photo
-                  </Button>
+                  <div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                      className="hidden"
+                      id="avatar-upload"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => document.getElementById('avatar-upload')?.click()}
+                    >
+                      <Camera className="w-4 h-4 mr-2" />
+                      Change Photo
+                    </Button>
+                  </div>
                   <p className="text-xs text-muted">JPG, GIF or PNG. 1MB max.</p>
                 </div>
               </div>
