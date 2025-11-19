@@ -26,8 +26,9 @@ let TasksController = class TasksController {
     create(createTaskDto) {
         return this.tasksService.create(createTaskDto);
     }
-    findAll() {
-        return this.tasksService.findAll();
+    findAll(req) {
+        const organizationId = req.tenant?.organizationId;
+        return this.tasksService.findAll(organizationId);
     }
     findOne(id) {
         return this.tasksService.findOne(+id);
@@ -49,8 +50,9 @@ __decorate([
 ], TasksController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], TasksController.prototype, "findAll", null);
 __decorate([

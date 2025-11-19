@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const users_service_1 = require("./users.service");
 const create_user_dto_1 = require("./dto/create-user.dto");
 const update_user_dto_1 = require("./dto/update-user.dto");
+const update_profile_dto_1 = require("./dto/update-profile.dto");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let UsersController = class UsersController {
     usersService;
@@ -26,8 +27,9 @@ let UsersController = class UsersController {
     create(createUserDto) {
         return this.usersService.create(createUserDto);
     }
-    findAll() {
-        return this.usersService.findAll();
+    findAll(req) {
+        const organizationId = req.tenant?.organizationId;
+        return this.usersService.findAll(organizationId);
     }
     findOne(id) {
         return this.usersService.findOne(+id);
@@ -37,6 +39,10 @@ let UsersController = class UsersController {
     }
     remove(id) {
         return this.usersService.remove(+id);
+    }
+    updateProfile(req, updateProfileDto) {
+        const userId = req.user?.userId;
+        return this.usersService.updateProfile(userId, updateProfileDto);
     }
 };
 exports.UsersController = UsersController;
@@ -49,8 +55,9 @@ __decorate([
 ], UsersController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "findAll", null);
 __decorate([
@@ -75,6 +82,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Put)('profile'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, update_profile_dto_1.UpdateProfileDto]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "updateProfile", null);
 exports.UsersController = UsersController = __decorate([
     (0, common_1.Controller)('users'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

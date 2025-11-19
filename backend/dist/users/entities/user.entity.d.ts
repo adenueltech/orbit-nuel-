@@ -9,4 +9,10 @@ export declare class User {
     organization: Organization;
     phone: string;
     hireDate: Date;
+    avatar: string;
+    department: string;
+    status: string;
+    projectsCount: number;
+    tasksCompleted: number;
+    lastActive: Date;
 }

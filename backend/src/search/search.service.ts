@@ -24,7 +24,10 @@ export class SearchService {
     private cacheManager: Cache,
   ) {}
 
-  async search(queryDto: SearchQueryDto, userId?: number): Promise<SearchResultDto> {
+  async search(
+    queryDto: SearchQueryDto,
+    userId?: number,
+  ): Promise<SearchResultDto> {
     const startTime = Date.now();
     const cacheKey = this.generateCacheKey(queryDto, userId);
 
@@ -61,7 +64,11 @@ export class SearchService {
     return result;
   }
 
-  async getSuggestions(query: string, userId?: number, limit: number = 10): Promise<string[]> {
+  async getSuggestions(
+    query: string,
+    userId?: number,
+    limit: number = 10,
+  ): Promise<string[]> {
     const cacheKey = `suggestions:${query}:${userId || 'anonymous'}:${limit}`;
 
     const cached = await this.cacheManager.get<string[]>(cacheKey);
@@ -77,13 +84,16 @@ export class SearchService {
       .limit(limit)
       .getRawMany();
 
-    const result = suggestions.map(s => s.history_query);
+    const result = suggestions.map((s) => s.history_query);
     await this.cacheManager.set(cacheKey, result, 600000); // 10 minutes
 
     return result;
   }
 
-  async getSearchHistory(userId: number, limit: number = 20): Promise<SearchHistory[]> {
+  async getSearchHistory(
+    userId: number,
+    limit: number = 20,
+  ): Promise<SearchHistory[]> {
     return this.searchHistoryRepository.find({
       where: { userId },
       order: { timestamp: 'DESC' },
@@ -91,17 +101,30 @@ export class SearchService {
     });
   }
 
-  async indexEntity(entityType: SearchEntityType, entityId: number, title: string, content: string, metadata?: Record<string, any>) {
-    const relevanceScore = this.calculateRelevanceScore(title, content, metadata);
-
-    await this.searchIndexRepository.upsert({
-      entityType,
-      entityId,
+  async indexEntity(
+    entityType: SearchEntityType,
+    entityId: number,
+    title: string,
+    content: string,
+    metadata?: Record<string, any>,
+  ) {
+    const relevanceScore = this.calculateRelevanceScore(
       title,
       content,
-      metadata: metadata || {},
-      relevanceScore,
-    }, ['entityType', 'entityId']);
+      metadata,
+    );
+
+    await this.searchIndexRepository.upsert(
+      {
+        entityType,
+        entityId,
+        title,
+        content,
+        metadata: metadata || {},
+        relevanceScore,
+      },
+      ['entityType', 'entityId'],
+    );
 
     // Invalidate related caches
     await this.invalidateEntityCache(entityType, entityId);
@@ -112,24 +135,35 @@ export class SearchService {
     await this.invalidateEntityCache(entityType, entityId);
   }
 
-  private buildSearchQuery(queryDto: SearchQueryDto): SelectQueryBuilder<SearchIndex> {
-    const queryBuilder = this.searchIndexRepository.createQueryBuilder('search');
+  private buildSearchQuery(
+    queryDto: SearchQueryDto,
+  ): SelectQueryBuilder<SearchIndex> {
+    const queryBuilder =
+      this.searchIndexRepository.createQueryBuilder('search');
 
     // Full-text search
-    queryBuilder.where('MATCH(search.content) AGAINST (:query IN NATURAL LANGUAGE MODE)', {
-      query: queryDto.q,
-    });
+    queryBuilder.where(
+      'MATCH(search.content) AGAINST (:query IN NATURAL LANGUAGE MODE)',
+      {
+        query: queryDto.q,
+      },
+    );
 
     // Filter by entity type
     if (queryDto.type) {
-      queryBuilder.andWhere('search.entityType = :type', { type: queryDto.type });
+      queryBuilder.andWhere('search.entityType = :type', {
+        type: queryDto.type,
+      });
     }
 
     // Apply additional filters
     if (queryDto.filters) {
       Object.entries(queryDto.filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
-          queryBuilder.andWhere(`JSON_EXTRACT(search.metadata, '$.${key}') = :${key}`, { [key]: value });
+          queryBuilder.andWhere(
+            `JSON_EXTRACT(search.metadata, '$.${key}') = :${key}`,
+            { [key]: value },
+          );
         }
       });
     }
@@ -153,8 +187,11 @@ export class SearchService {
     return queryBuilder;
   }
 
-  private processSearchResults(items: SearchIndex[], query: string): SearchResultItem[] {
-    return items.map(item => ({
+  private processSearchResults(
+    items: SearchIndex[],
+    query: string,
+  ): SearchResultItem[] {
+    return items.map((item) => ({
       id: item.id,
       entityType: item.entityType as any,
       entityId: item.entityId,
@@ -171,7 +208,7 @@ export class SearchService {
     const highlights: string[] = [];
     const contentLower = content.toLowerCase();
 
-    words.forEach(word => {
+    words.forEach((word) => {
       const index = contentLower.indexOf(word);
       if (index !== -1) {
         const start = Math.max(0, index - 50);
@@ -183,7 +220,11 @@ export class SearchService {
     return highlights.slice(0, 3); // Limit to 3 highlights
   }
 
-  private calculateRelevanceScore(title: string, content: string, metadata?: Record<string, any>): number {
+  private calculateRelevanceScore(
+    title: string,
+    content: string,
+    metadata?: Record<string, any>,
+  ): number {
     let score = 1.0;
 
     // Boost score based on title matches
@@ -203,15 +244,24 @@ export class SearchService {
     return `search:${JSON.stringify(queryDto)}:${userId || 'anonymous'}`;
   }
 
-  private async invalidateEntityCache(entityType: SearchEntityType, entityId: number) {
+  private async invalidateEntityCache(
+    entityType: SearchEntityType,
+    entityId: number,
+  ) {
     // Invalidate all search caches that might contain this entity
     // This is a simplified approach; in production, you might want more granular cache invalidation
     // Note: Cache reset method may vary by cache implementation
     // For now, we'll skip cache invalidation to avoid type issues
-    this.logger.log(`Cache invalidation skipped for entity ${entityType}:${entityId}`);
+    this.logger.log(
+      `Cache invalidation skipped for entity ${entityType}:${entityId}`,
+    );
   }
 
-  private async trackSearchAnalytics(queryDto: SearchQueryDto, result: SearchResultDto, userId?: number) {
+  private async trackSearchAnalytics(
+    queryDto: SearchQueryDto,
+    result: SearchResultDto,
+    userId?: number,
+  ) {
     await this.searchAnalyticsRepository.save({
       userId,
       query: queryDto.q,
@@ -221,7 +271,11 @@ export class SearchService {
     });
   }
 
-  private async saveSearchHistory(queryDto: SearchQueryDto, userId: number, resultCount: number) {
+  private async saveSearchHistory(
+    queryDto: SearchQueryDto,
+    userId: number,
+    resultCount: number,
+  ) {
     await this.searchHistoryRepository.save({
       userId,
       query: queryDto.q,

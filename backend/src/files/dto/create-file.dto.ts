@@ -1,4 +1,11 @@
-import { IsString, IsOptional, IsEnum, IsBoolean, IsArray, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsBoolean,
+  IsArray,
+  IsNumber,
+} from 'class-validator';
 
 export class CreateFileDto {
   @IsString()

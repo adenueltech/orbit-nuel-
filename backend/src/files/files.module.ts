@@ -3,9 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { FilesService } from './files.service';
 import { FilesController } from './files.controller';
 import { File } from './entities/file.entity';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([File])],
+  imports: [TypeOrmModule.forFeature([File]), UsersModule],
   controllers: [FilesController],
   providers: [FilesService],
   exports: [FilesService],

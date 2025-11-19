@@ -31,14 +31,24 @@ let ProjectsService = class ProjectsService {
         });
         return this.projectsRepository.save(project);
     }
-    async findAll() {
-        return this.projectsRepository.find({ relations: ['owner', 'organization', 'tasks'] });
+    async findAll(organizationId) {
+        const where = organizationId ? { organizationId } : {};
+        return this.projectsRepository.find({
+            where,
+            relations: ['owner', 'organization', 'tasks'],
+        });
     }
     async findOne(id) {
-        return this.projectsRepository.findOne({ where: { id }, relations: ['owner', 'organization', 'tasks'] });
+        return this.projectsRepository.findOne({
+            where: { id },
+            relations: ['owner', 'organization', 'tasks'],
+        });
     }
     async update(id, updateProjectDto) {
-        await this.projectsRepository.update(id, { ...updateProjectDto, updatedAt: new Date() });
+        await this.projectsRepository.update(id, {
+            ...updateProjectDto,
+            updatedAt: new Date(),
+        });
         return this.findOne(id);
     }
     async remove(id) {
@@ -48,9 +58,41 @@ let ProjectsService = class ProjectsService {
         return this.projectsRepository.count({
             where: {
                 organizationId,
-                status: (0, Not_1.Not)('completed')
-            }
+                status: (0, Not_1.Not)('completed'),
+            },
         });
+    }
+    async findRecent(organizationId, limit = 4) {
+        return this.projectsRepository.find({
+            where: { organizationId },
+            order: { createdAt: 'DESC' },
+            take: limit,
+            relations: ['owner'],
+        });
+    }
+    async getStatusDistribution(organizationId) {
+        const result = await this.projectsRepository
+            .createQueryBuilder('project')
+            .select('project.status', 'status')
+            .addSelect('COUNT(*)', 'count')
+            .where('project.organizationId = :organizationId', { organizationId })
+            .groupBy('project.status')
+            .getRawMany();
+        const total = result.reduce((sum, item) => sum + parseInt(item.count), 0);
+        return result.map((item) => ({
+            name: item.status || 'Unknown',
+            value: Math.round((parseInt(item.count) / total) * 100),
+            color: this.getStatusColor(item.status),
+        }));
+    }
+    getStatusColor(status) {
+        const colors = {
+            active: '#10b981',
+            planning: '#f59e0b',
+            completed: '#6b7280',
+            'on-hold': '#ef4444',
+        };
+        return colors[status] || '#6b7280';
     }
 };
 exports.ProjectsService = ProjectsService;

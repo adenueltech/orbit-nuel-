@@ -26,7 +26,8 @@ export class SettingsController {
 
     // If no user settings, try organization settings
     if (!settings && organizationId) {
-      settings = await this.settingsService.findByOrganizationId(organizationId);
+      settings =
+        await this.settingsService.findByOrganizationId(organizationId);
     }
 
     // If still no settings, create default user settings
@@ -43,7 +44,10 @@ export class SettingsController {
   }
 
   @Put()
-  async updateSettings(@Request() req: any, @Body() updateSettingsDto: UpdateSettingsDto) {
+  async updateSettings(
+    @Request() req: any,
+    @Body() updateSettingsDto: UpdateSettingsDto,
+  ) {
     const userId = req.user?.userId;
     const organizationId = req.tenant?.organizationId;
 

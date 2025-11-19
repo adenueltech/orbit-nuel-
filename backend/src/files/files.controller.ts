@@ -1,4 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFile, Request, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  Request,
+  Put,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FilesService } from './files.service';
 import { CreateFileDto } from './dto/create-file.dto';
@@ -49,12 +62,14 @@ export class FilesController {
   }
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file', {
-    storage: multer.memoryStorage(),
-    limits: {
-      fileSize: 50 * 1024 * 1024, // 50MB
-    },
-  }))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: multer.memoryStorage(),
+      limits: {
+        fileSize: 50 * 1024 * 1024, // 50MB
+      },
+    }),
+  )
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
     @Body() uploadDto: UploadFileDto,
@@ -63,22 +78,29 @@ export class FilesController {
     const userId = req.user.id;
     const organizationId = req.user.organizationId; // Assuming user has organizationId
 
-    return this.filesService.uploadFile(file, uploadDto, userId, organizationId);
+    return this.filesService.uploadFile(
+      file,
+      uploadDto,
+      userId,
+      organizationId,
+    );
   }
 
   @Post('upload/avatar')
-  @UseInterceptors(FileInterceptor('avatar', {
-    storage: multer.memoryStorage(),
-    limits: {
-      fileSize: 1024 * 1024, // 1MB
-    },
-    fileFilter: (req, file, callback) => {
-      if (!file.mimetype.startsWith('image/')) {
-        return callback(new Error('Only image files are allowed'), false);
-      }
-      callback(null, true);
-    },
-  }))
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      storage: multer.memoryStorage(),
+      limits: {
+        fileSize: 1024 * 1024, // 1MB
+      },
+      fileFilter: (req, file, callback) => {
+        if (!file.mimetype.startsWith('image/')) {
+          return callback(new Error('Only image files are allowed'), false);
+        }
+        callback(null, true);
+      },
+    }),
+  )
   async uploadAvatar(
     @UploadedFile() file: Express.Multer.File,
     @Request() req: any,

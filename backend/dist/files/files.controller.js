@@ -14,10 +14,13 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FilesController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
 const files_service_1 = require("./files.service");
 const create_file_dto_1 = require("./dto/create-file.dto");
 const update_file_dto_1 = require("./dto/update-file.dto");
+const upload_file_dto_1 = require("./dto/upload-file.dto");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const multer = require("multer");
 let FilesController = class FilesController {
     filesService;
     constructor(filesService) {
@@ -26,8 +29,9 @@ let FilesController = class FilesController {
     create(createFileDto) {
         return this.filesService.create(createFileDto);
     }
-    findAll() {
-        return this.filesService.findAll();
+    findAll(req) {
+        const organizationId = req.tenant?.organizationId;
+        return this.filesService.findAll(organizationId);
     }
     findByOrganization(organizationId) {
         return this.filesService.findByOrganization(+organizationId);
@@ -44,6 +48,15 @@ let FilesController = class FilesController {
     remove(id) {
         return this.filesService.remove(+id);
     }
+    async uploadFile(file, uploadDto, req) {
+        const userId = req.user.id;
+        const organizationId = req.user.organizationId;
+        return this.filesService.uploadFile(file, uploadDto, userId, organizationId);
+    }
+    async uploadAvatar(file, req) {
+        const userId = req.user.id;
+        return this.filesService.uploadAvatar(file, userId);
+    }
 };
 exports.FilesController = FilesController;
 __decorate([
@@ -55,8 +68,9 @@ __decorate([
 ], FilesController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], FilesController.prototype, "findAll", null);
 __decorate([
@@ -95,6 +109,41 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], FilesController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Post)('upload'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
+        storage: multer.memoryStorage(),
+        limits: {
+            fileSize: 50 * 1024 * 1024,
+        },
+    })),
+    __param(0, (0, common_1.UploadedFile)()),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, upload_file_dto_1.UploadFileDto, Object]),
+    __metadata("design:returntype", Promise)
+], FilesController.prototype, "uploadFile", null);
+__decorate([
+    (0, common_1.Post)('upload/avatar'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('avatar', {
+        storage: multer.memoryStorage(),
+        limits: {
+            fileSize: 1024 * 1024,
+        },
+        fileFilter: (req, file, callback) => {
+            if (!file.mimetype.startsWith('image/')) {
+                return callback(new Error('Only image files are allowed'), false);
+            }
+            callback(null, true);
+        },
+    })),
+    __param(0, (0, common_1.UploadedFile)()),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], FilesController.prototype, "uploadAvatar", null);
 exports.FilesController = FilesController = __decorate([
     (0, common_1.Controller)('files'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

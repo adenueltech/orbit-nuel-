@@ -26,8 +26,9 @@ let ProjectsController = class ProjectsController {
     create(createProjectDto) {
         return this.projectsService.create(createProjectDto);
     }
-    findAll() {
-        return this.projectsService.findAll();
+    findAll(req) {
+        const organizationId = req.tenant?.organizationId;
+        return this.projectsService.findAll(organizationId);
     }
     async getOverviewStats() {
         const activeProjects = await this.projectsService.countActive(1);
@@ -59,8 +60,9 @@ __decorate([
 ], ProjectsController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "findAll", null);
 __decorate([

@@ -48,7 +48,10 @@ export class UsersController {
   }
 
   @Put('profile')
-  updateProfile(@Request() req: any, @Body() updateProfileDto: UpdateProfileDto) {
+  updateProfile(
+    @Request() req: any,
+    @Body() updateProfileDto: UpdateProfileDto,
+  ) {
     const userId = req.user?.userId;
     return this.usersService.updateProfile(userId, updateProfileDto);
   }

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '@/lib/api-client';
 import { useOrganization } from '@/lib/contexts/organization-context';
 
@@ -16,6 +16,26 @@ export interface Task {
   comments: number;
   attachments: number;
   tags: string[];
+}
+
+export interface CreateTaskData {
+  title: string;
+  description?: string;
+  status?: string;
+  priority?: string;
+  dueDate?: string;
+  assigneeId?: number;
+  projectId?: number;
+  organizationId?: number;
+}
+
+export interface UpdateTaskData {
+  title?: string;
+  description?: string;
+  status?: string;
+  priority?: string;
+  dueDate?: string;
+  assigneeId?: number;
 }
 
 export const useTasks = (projectId?: string) => {
@@ -45,5 +65,55 @@ export const useTasks = (projectId?: string) => {
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 3,
     enabled: !!organizationId,
+  });
+};
+
+export const useCreateTask = () => {
+  const queryClient = useQueryClient();
+  const { organizationId } = useOrganization();
+
+  return useMutation({
+    mutationFn: async (data: CreateTaskData) => {
+      const response = await apiClient.post('/tasks', {
+        ...data,
+        organizationId,
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks', organizationId] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', organizationId] });
+    },
+  });
+};
+
+export const useUpdateTask = () => {
+  const queryClient = useQueryClient();
+  const { organizationId } = useOrganization();
+
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: UpdateTaskData }) => {
+      const response = await apiClient.patch(`/tasks/${id}`, data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks', organizationId] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', organizationId] });
+    },
+  });
+};
+
+export const useDeleteTask = () => {
+  const queryClient = useQueryClient();
+  const { organizationId } = useOrganization();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await apiClient.delete(`/tasks/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks', organizationId] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', organizationId] });
+    },
   });
 };

@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Organization } from '../../organizations/entities/organization.entity';
 import { Task } from '../../tasks/entities/task.entity';
@@ -35,7 +42,7 @@ export class Project {
   @Column()
   organizationId: number;
 
-  @OneToMany(() => Task, task => task.project)
+  @OneToMany(() => Task, (task) => task.project)
   tasks: Task[];
 
   @Column({ default: () => 'CURRENT_TIMESTAMP' })

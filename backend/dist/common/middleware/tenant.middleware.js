@@ -11,12 +11,16 @@ const common_1 = require("@nestjs/common");
 let TenantMiddleware = class TenantMiddleware {
     use(req, res, next) {
         const host = req.headers.host || '';
+        const organizationId = req.headers['x-organization-id'];
         if (!host) {
             next();
             return;
         }
         const subdomain = host.split('.')[0];
-        req['tenant'] = { subdomain };
+        req['tenant'] = {
+            subdomain,
+            organizationId: organizationId ? parseInt(organizationId) : null,
+        };
         next();
     }
 };

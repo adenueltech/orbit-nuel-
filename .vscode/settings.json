@@ -1,0 +1,10 @@
+{
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "prettier.endOfLine": "lf",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}

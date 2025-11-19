@@ -53,6 +53,6 @@ export class User {
   @Column({ default: 0 })
   tasksCompleted: number;
 
-  @Column({ type: 'datetime', nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
   lastActive: Date;
 }

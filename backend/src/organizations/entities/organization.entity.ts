@@ -12,7 +12,7 @@ export class Organization {
   @Column({ unique: true })
   subdomain: string;
 
-  @OneToMany(() => User, user => user.organization)
+  @OneToMany(() => User, (user) => user.organization)
   users: User[];
 
   @Column()

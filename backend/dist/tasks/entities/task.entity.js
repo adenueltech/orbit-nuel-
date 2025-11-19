@@ -29,6 +29,9 @@ let Task = class Task {
     dueDate;
     createdAt;
     updatedAt;
+    comments;
+    attachments;
+    tags;
 };
 exports.Task = Task;
 __decorate([
@@ -98,6 +101,18 @@ __decorate([
     (0, typeorm_1.Column)({ default: () => 'CURRENT_TIMESTAMP' }),
     __metadata("design:type", Date)
 ], Task.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)('json', { nullable: true }),
+    __metadata("design:type", Array)
+], Task.prototype, "comments", void 0);
+__decorate([
+    (0, typeorm_1.Column)('json', { nullable: true }),
+    __metadata("design:type", Array)
+], Task.prototype, "attachments", void 0);
+__decorate([
+    (0, typeorm_1.Column)('simple-array', { nullable: true }),
+    __metadata("design:type", Array)
+], Task.prototype, "tags", void 0);
 exports.Task = Task = __decorate([
     (0, typeorm_1.Entity)()
 ], Task);

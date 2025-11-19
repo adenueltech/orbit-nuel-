@@ -1,474 +1,349 @@
-# OrbitNuel - Project Management & Collaboration Platform
+# OrbitNuel
 
-![OrbitNuel Logo](public/placeholder-logo.png)
+A comprehensive project management and collaboration platform built with modern web technologies. OrbitNuel provides teams with powerful tools for task management, file sharing, analytics, and real-time notifications.
 
-A comprehensive project management and team collaboration platform designed to streamline workflow management, enhance team productivity, and provide real-time insights into project progress.
+## 🚀 Features
 
-## 🎯 Problem Statement
+### Core Functionality
+- **User Authentication & Authorization**: Secure JWT-based authentication with role-based access control
+- **Organization Management**: Multi-tenant architecture supporting multiple organizations
+- **Project Management**: Create and manage projects with team collaboration
+- **Task Management**: Comprehensive task tracking with Kanban board interface
+- **File Management**: Upload, organize, and share files with cloud storage integration
+- **Real-time Notifications**: WebSocket-based notifications for team communication
+- **Analytics Dashboard**: Insights and metrics for project performance
+- **Global Search**: Full-text search across projects, tasks, and files
 
-Modern teams face several challenges in project management and collaboration:
-
-### **Fragmented Workflow Management**
-- Teams use multiple disconnected tools for different aspects of project management
-- Lack of centralized visibility into project status and team performance
-- Difficulty tracking task progress and resource allocation
-
-### **Poor Team Communication & Collaboration**
-- Inefficient communication channels leading to miscommunication
-- Lack of real-time updates on project changes and task assignments
-- Difficulty coordinating between team members across different locations
-
-### **Limited Analytics & Insights**
-- No comprehensive view of team productivity and project health
-- Difficulty identifying bottlenecks and optimization opportunities
-- Lack of data-driven decision making capabilities
-
-### **Scalability & Integration Issues**
-- Tools that don't scale with team growth
-- Integration challenges with existing workflows
-- Data silos preventing comprehensive analysis
-
-## 🚀 Solution
-
-OrbitNuel provides a unified platform that addresses all these challenges through:
-
-### **Centralized Project Management**
-- Single dashboard for all projects, tasks, and team activities
-- Real-time Kanban boards for visual task management
-- Comprehensive project lifecycle tracking from planning to completion
-
-### **Enhanced Team Collaboration**
-- Integrated team communication and file sharing
-- Real-time notifications and updates
-- Role-based access control and permissions
-
-### **Advanced Analytics & Reporting**
-- Comprehensive analytics dashboard with key performance indicators
-- Real-time insights into team productivity and project health
-- Customizable reports and data visualization
-
-### **Scalable Architecture**
-- Cloud-native design supporting team growth
-- RESTful API for seamless integrations
-- Multi-tenant architecture for organization management
+### Technical Features
+- **Responsive Design**: Mobile-first design with modern UI components
+- **Real-time Updates**: WebSocket integration for live notifications
+- **File Upload**: Support for multiple file types with AWS S3 integration
+- **API Documentation**: RESTful API with comprehensive endpoints
+- **Database**: PostgreSQL with TypeORM for data persistence
+- **Security**: Input validation, SQL injection prevention, CORS configuration
 
 ## 🛠️ Tech Stack
 
-### **Frontend**
-- **Framework**: Next.js 14 (React-based)
+### Backend
+- **Framework**: NestJS (Node.js)
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **UI Components**: Radix UI + Custom Components
-- **State Management**: React Hooks + Context API
-- **Charts & Visualization**: Recharts
-- **Icons**: Lucide React
-
-### **Backend**
-- **Framework**: NestJS
-- **Language**: TypeScript
-- **Database**: PostgreSQL (Neon)
+- **Database**: PostgreSQL
 - **ORM**: TypeORM
-- **Authentication**: JWT (JSON Web Tokens)
-- **Validation**: Class Validator
+- **Authentication**: JWT with Passport.js
+- **File Storage**: AWS S3 (production) / Local storage (development)
+- **Real-time**: Socket.io
+- **Validation**: Class-validator
 - **Documentation**: Swagger/OpenAPI
 
-### **Infrastructure & DevOps**
-- **Database Hosting**: Neon (Serverless PostgreSQL)
-- **Deployment**: Vercel (Frontend) + Railway/Heroku (Backend)
+### Frontend
+- **Framework**: Next.js 14 (React)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui
+- **State Management**: Zustand
+- **HTTP Client**: TanStack Query (React Query)
+- **Notifications**: Sonner
+- **Charts**: Recharts
+- **Forms**: React Hook Form
+
+### DevOps & Tools
 - **Package Manager**: pnpm
-- **Code Quality**: ESLint + Prettier
+- **Code Quality**: ESLint, Prettier
 - **Testing**: Jest
+- **Containerization**: Docker (planned)
+- **CI/CD**: GitHub Actions (planned)
 
-### **Key Dependencies**
-```json
-{
-  "frontend": {
-    "@radix-ui/react-dialog": "^1.0.5",
-    "@radix-ui/react-dropdown-menu": "^2.0.6",
-    "recharts": "^2.8.0",
-    "lucide-react": "^0.294.0",
-    "tailwindcss": "^3.3.6"
-  },
-  "backend": {
-    "@nestjs/common": "^11.1.6",
-    "@nestjs/typeorm": "^10.0.1",
-    "@nestjs/jwt": "^10.2.0",
-    "@nestjs/passport": "^10.0.2",
-    "typeorm": "^0.3.17",
-    "bcryptjs": "^2.4.3",
-    "class-validator": "^0.14.0"
-  }
-}
-```
+## 📋 Prerequisites
 
-## 📋 Features
-
-### **Core Functionality**
-- ✅ User Authentication & Authorization
-- ✅ Multi-tenant Organization Management
-- ✅ Project Creation & Management
-- ✅ Task Management with Kanban Boards
-- ✅ File Upload & Management
-- ✅ Team Member Management
-- ✅ Real-time Analytics & Reporting
-- ✅ Role-based Access Control
-
-### **Advanced Features**
-- 🔄 Real-time Updates & Notifications
-- 📊 Comprehensive Analytics Dashboard
-- 📁 File Organization & Sharing
-- 👥 Team Collaboration Tools
-- 📈 Performance Metrics & KPIs
-- 🎨 Customizable UI Themes
-- 📱 Responsive Design
-
-## 🚀 Getting Started
-
-### **Prerequisites**
 - Node.js 18+ and pnpm
-- PostgreSQL database (Neon recommended)
-- Git
+- PostgreSQL 13+
+- AWS S3 account (for file storage in production)
 
-### **Installation**
+## 🚀 Installation & Setup
 
-#### **1. Clone the Repository**
+### 1. Clone the Repository
 ```bash
-git clone https://github.com/adenueltech/orbit-nuel.git
+git clone <repository-url>
 cd orbit-nuel
 ```
 
-#### **2. Install Dependencies**
+### 2. Install Dependencies
 ```bash
-# Install frontend dependencies
-pnpm install
-
 # Install backend dependencies
 cd backend
 pnpm install
+
+# Install frontend dependencies (from root)
 cd ..
+pnpm install
 ```
 
-#### **3. Environment Setup**
+### 3. Database Setup
+```bash
+# Create PostgreSQL database
+createdb orbitnuel
 
-##### **Backend Configuration**
-Create `.env` file in the `backend` directory:
+# Or using psql
+psql -U postgres -c "CREATE DATABASE orbitnuel;"
+```
+
+### 4. Environment Configuration
+
+#### Backend (.env)
 ```env
 # Database
-DATABASE_URL=postgresql://username:password@host:port/database?sslmode=require
+DATABASE_URL=postgresql://postgres:Adenuel123450##@localhost:5432/orbitnuel
 
 # JWT
 JWT_SECRET=your-super-secret-jwt-key-change-in-production
 
-# Server
+# AWS S3 (for production file storage)
+AWS_ACCESS_KEY_ID=your-aws-access-key
+AWS_SECRET_ACCESS_KEY=your-aws-secret-key
+AWS_REGION=us-east-1
+AWS_S3_BUCKET=your-s3-bucket-name
+
+# Application
+NODE_ENV=development
 PORT=3001
 ```
 
-##### **Frontend Configuration**
-Create `.env.local` file in the root directory:
-```env
-# API Configuration
-NEXT_PUBLIC_API_URL=http://localhost:3001
+#### Frontend Environment (if needed)
+Create `.env.local` in the root directory if you have frontend-specific environment variables.
 
-# Optional: Analytics, etc.
-```
-
-#### **4. Database Setup**
-
-##### **Using Neon (Recommended)**
-1. Create a Neon account at [neon.tech](https://neon.tech)
-2. Create a new project
-3. Copy the connection string to your `.env` file
-4. The application will automatically create tables on first run
-
-##### **Using Local PostgreSQL**
+### 5. Database Migration
 ```bash
-# Install PostgreSQL locally
-# Create database
-createdb orbit_nuel
-
-# Update DATABASE_URL in .env
-DATABASE_URL=postgresql://username:password@localhost:5432/orbit_nuel
-```
-
-#### **5. Run Database Migrations**
-```bash
-cd backend
-# Tables are created automatically with synchronize: true
-# For production, set synchronize: false and use migrations
-```
-
-#### **6. Start the Application**
-
-##### **Development Mode**
-```bash
-# Terminal 1: Start Backend
 cd backend
 pnpm run start:dev
+```
+The application will automatically create/sync database tables using TypeORM.
 
-# Terminal 2: Start Frontend
+### 6. Start Development Servers
+
+#### Terminal 1: Backend
+```bash
+cd backend
+pnpm run start:dev
+```
+
+#### Terminal 2: Frontend
+```bash
 pnpm run dev
 ```
 
-##### **Production Build**
-```bash
-# Build Frontend
-pnpm run build
-
-# Build Backend
-cd backend
-pnpm run build
-
-# Start Production Servers
-pnpm run start:prod  # Backend
-pnpm start           # Frontend
-```
-
-#### **7. Access the Application**
+### 7. Access the Application
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:3001
-- API Documentation: http://localhost:3001/api
 
-## 📖 Usage Guide
+## 📖 Usage
 
-### **First Time Setup**
+### User Registration & Login
+1. Visit the application and click "Sign Up"
+2. Create your account with company details
+3. Verify your email (if email verification is enabled)
+4. Sign in with your credentials
 
-1. **Create Organization**
-   - Visit the signup page
-   - Enter your company details
-   - Create your admin account
+### Creating Your First Project
+1. Navigate to the Projects section
+2. Click "Create Project"
+3. Add team members and set project details
+4. Start creating tasks and uploading files
 
-2. **Invite Team Members**
-   - Go to Team section
-   - Send invitations via email
-   - Assign appropriate roles
+### API Documentation
+Access the API documentation at `http://localhost:3001/api` when the backend is running.
 
-3. **Create Your First Project**
-   - Navigate to Projects
-   - Click "New Project"
-   - Set up basic project details
+## 🏗️ Project Structure
 
-### **Daily Workflow**
+```
+orbit-nuel/
+├── app/                    # Next.js frontend application
+│   ├── auth/              # Authentication pages
+│   ├── dashboard/         # Dashboard pages
+│   ├── api/               # API routes (if any)
+│   └── globals.css        # Global styles
+├── backend/               # NestJS backend application
+│   ├── src/
+│   │   ├── analytics/     # Analytics module
+│   │   ├── auth/          # Authentication module
+│   │   ├── common/        # Shared utilities
+│   │   ├── dashboard/     # Dashboard module
+│   │   ├── files/         # File management module
+│   │   ├── notifications/ # Notifications module
+│   │   ├── organizations/ # Organization management
+│   │   ├── projects/      # Project management
+│   │   ├── search/        # Search functionality
+│   │   ├── settings/      # User settings
+│   │   ├── tasks/         # Task management
+│   │   ├── users/         # User management
+│   │   └── main.ts        # Application entry point
+│   ├── test/              # End-to-end tests
+│   └── .env               # Environment variables
+├── components/            # Reusable React components
+├── hooks/                 # Custom React hooks
+├── lib/                   # Utility libraries
+├── public/                # Static assets
+└── styles/                # Additional styles
+```
 
-#### **Project Management**
-1. Create projects with clear objectives
-2. Break down projects into manageable tasks
-3. Assign tasks to team members
-4. Track progress using Kanban boards
+## 🔧 Available Scripts
 
-#### **Task Management**
-1. Create tasks with detailed descriptions
-2. Set priorities and due dates
-3. Move tasks through workflow stages
-4. Update task status in real-time
-
-#### **File Management**
-1. Upload project-related files
-2. Organize files in folders
-3. Share files with team members
-4. Track file versions and changes
-
-#### **Team Collaboration**
-1. View team member availability
-2. Assign tasks based on workload
-3. Monitor team performance
-4. Generate productivity reports
-
-### **Analytics & Reporting**
-
-#### **Dashboard Overview**
-- View key metrics at a glance
-- Monitor project health scores
-- Track team productivity trends
-
-#### **Custom Reports**
-- Generate detailed project reports
-- Export data for external analysis
-- Schedule automated reports
-
-## 🔧 API Documentation
-
-### **Authentication Endpoints**
-
+### Backend Scripts
 ```bash
-# Register new user
-POST /auth/register
-Content-Type: application/json
+cd backend
 
-{
-  "firstName": "John",
-  "lastName": "Doe",
-  "email": "john@company.com",
-  "password": "securepassword",
-  "company": "Tech Corp"
-}
-
-# Login
-POST /auth/login
-Content-Type: application/json
-
-{
-  "email": "john@company.com",
-  "password": "securepassword"
-}
+# Development
+pnpm run start:dev          # Start with hot reload
+pnpm run start:prod         # Production build
+pnpm run build              # Build application
+pnpm run test               # Run unit tests
+pnpm run test:e2e           # Run e2e tests
+pnpm run test:cov           # Test coverage
+pnpm run lint               # Run ESLint
+pnpm run format             # Run Prettier
 ```
 
-### **Protected Endpoints**
-All data endpoints require JWT authentication:
-
+### Frontend Scripts
 ```bash
-Authorization: Bearer <your-jwt-token>
+# Development
+pnpm run dev                # Start Next.js development server
+pnpm run build              # Build for production
+pnpm run start              # Start production server
+pnpm run lint               # Run ESLint
+pnpm run type-check         # TypeScript type checking
 ```
 
-### **Core Endpoints**
+## 🔐 Authentication
 
-```bash
-# Projects
-GET    /projects           # List all projects
-POST   /projects           # Create project
-GET    /projects/:id       # Get project details
-PUT    /projects/:id       # Update project
-DELETE /projects/:id       # Delete project
+The application uses JWT (JSON Web Tokens) for authentication:
 
-# Tasks
-GET    /tasks             # List all tasks
-POST   /tasks             # Create task
-GET    /tasks/:id         # Get task details
-PUT    /tasks/:id         # Update task
-DELETE /tasks/:id         # Delete task
+- **Access Token**: Short-lived token for API access
+- **Refresh Token**: Long-lived token for renewing access tokens
+- **Password Hashing**: bcrypt for secure password storage
+- **Role-based Access**: Admin, Manager, Member roles
 
-# Users
-GET    /users             # List all users
-GET    /users/:id         # Get user details
+## 📁 File Storage
 
-# Files
-GET    /files             # List all files
-POST   /files             # Upload file
-GET    /files/:id         # Get file details
-DELETE /files/:id         # Delete file
-```
+### Development
+- Files are stored locally in the `backend/uploads/` directory
+- Accessible via `/uploads/` route
 
-## 🔒 Security Features
+### Production
+- Files are uploaded to AWS S3
+- Configurable bucket and region
+- Public/private access control
 
-- **JWT Authentication**: Secure token-based authentication
-- **Password Hashing**: bcrypt encryption for passwords
-- **Role-based Access Control**: Granular permissions system
-- **Input Validation**: Comprehensive data validation
-- **SQL Injection Protection**: Parameterized queries
-- **CORS Configuration**: Secure cross-origin requests
+## 🔍 API Endpoints
 
-## 📊 Database Schema
+### Authentication
+- `POST /auth/register` - User registration
+- `POST /auth/login` - User login
+- `POST /auth/refresh` - Refresh access token
 
-### **Core Entities**
+### Users
+- `GET /users` - Get all users
+- `GET /users/:id` - Get user by ID
+- `PUT /users/:id` - Update user
+- `DELETE /users/:id` - Delete user
 
-#### **Users**
-- Authentication and profile information
-- Role-based permissions
-- Organization membership
+### Organizations
+- `GET /organizations` - Get organizations
+- `POST /organizations` - Create organization
+- `PUT /organizations/:id` - Update organization
 
-#### **Organizations**
-- Multi-tenant architecture
-- Company settings and preferences
+### Projects
+- `GET /projects` - Get projects
+- `POST /projects` - Create project
+- `PUT /projects/:id` - Update project
+- `DELETE /projects/:id` - Delete project
 
-#### **Projects**
-- Project lifecycle management
-- Team assignments
-- Progress tracking
+### Tasks
+- `GET /tasks` - Get tasks
+- `POST /tasks` - Create task
+- `PUT /tasks/:id` - Update task
+- `DELETE /tasks/:id` - Delete task
 
-#### **Tasks**
-- Task management within projects
-- Status tracking and assignments
-- Priority and deadline management
+### Files
+- `GET /files` - Get files
+- `POST /files/upload` - Upload file
+- `GET /files/:id` - Get file details
+- `DELETE /files/:id` - Delete file
 
-#### **Files**
-- File upload and storage
-- Organization and sharing
-- Version control
+### Analytics
+- `GET /analytics` - Get analytics data
 
-## 🚀 Deployment
+### Notifications
+- `GET /notifications` - Get user notifications
+- `POST /notifications` - Create notification
+- `PUT /notifications/:id/read` - Mark as read
 
-### **Frontend Deployment (Vercel)**
+### Dashboard
+- `GET /dashboard/overview` - Get dashboard overview
 
-1. Connect your GitHub repository to Vercel
-2. Configure environment variables
-3. Deploy automatically on push
-
-### **Backend Deployment (Railway)**
-
-1. Create Railway account
-2. Connect GitHub repository
-3. Configure environment variables
-4. Deploy with PostgreSQL database
-
-### **Environment Variables for Production**
-
-```env
-# Backend
-DATABASE_URL=your_production_db_url
-JWT_SECRET=your_production_jwt_secret
-NODE_ENV=production
-
-# Frontend
-NEXT_PUBLIC_API_URL=https://your-api-domain.com
-```
+### Search
+- `GET /search` - Global search
 
 ## 🧪 Testing
 
 ```bash
-# Run frontend tests
-pnpm test
-
-# Run backend tests
+# Backend tests
 cd backend
-pnpm test
+pnpm run test              # Unit tests
+pnpm run test:e2e          # End-to-end tests
+pnpm run test:cov          # Coverage report
 
-# Run e2e tests
-pnpm test:e2e
+# Frontend tests (if implemented)
+pnpm run test
 ```
+
+## 🚀 Deployment
+
+### Backend Deployment
+1. Build the application: `pnpm run build`
+2. Set production environment variables
+3. Configure PostgreSQL database
+4. Set up AWS S3 credentials
+5. Deploy using your preferred method (Docker, PM2, etc.)
+
+### Frontend Deployment
+1. Build the application: `pnpm run build`
+2. Deploy to Vercel, Netlify, or your preferred platform
+3. Configure environment variables
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new features
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Commit your changes: `git commit -am 'Add some feature'`
+4. Push to the branch: `git push origin feature/your-feature`
 5. Submit a pull request
 
-### **Development Guidelines**
+### Development Guidelines
 - Follow TypeScript best practices
-- Write comprehensive tests
-- Maintain code quality with ESLint
-- Use conventional commit messages
+- Write tests for new features
+- Update documentation as needed
+- Use conventional commits
+- Ensure code passes linting and formatting
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 Support
+## 📞 Support
 
-- **Documentation**: [docs.orbitnuel.com](https://docs.orbitnuel.com)
-- **Issues**: [GitHub Issues](https://github.com/yourusername/orbit-nuel/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/orbit-nuel/discussions)
-- **Email**: support@orbitnuel.com
+For support and questions:
+- Create an issue on GitHub
+- Contact the development team
+- Check the documentation
 
-## 🗺️ Roadmap
+## 🙏 Acknowledgments
 
-### **Phase 1 (Current)**
-- ✅ Core project management features
-- ✅ Team collaboration tools
-- ✅ Basic analytics dashboard
-
-### **Phase 2 (Upcoming)**
-- 🔄 Real-time notifications
-- 📱 Mobile application
-- 🤖 AI-powered insights
-- 📊 Advanced reporting
-
-### **Phase 3 (Future)**
-- 🌐 Multi-language support
-- 🔗 Third-party integrations
-- 📈 Machine learning predictions
-- ☁️ Advanced cloud features
+- [NestJS](https://nestjs.com/) - Progressive Node.js framework
+- [Next.js](https://nextjs.com/) - React framework
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
+- [shadcn/ui](https://ui.shadcn.com/) - Modern UI components
+- [TypeORM](https://typeorm.io/) - TypeScript ORM
+- [Socket.io](https://socket.io/) - Real-time communication
 
 ---
 
-**Built with ❤️ for teams that want to achieve more together.**
+Built with ❤️ using modern web technologies

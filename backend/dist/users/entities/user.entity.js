@@ -22,6 +22,12 @@ let User = class User {
     organization;
     phone;
     hireDate;
+    avatar;
+    department;
+    status;
+    projectsCount;
+    tasksCompleted;
+    lastActive;
 };
 exports.User = User;
 __decorate([
@@ -64,6 +70,34 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Date)
 ], User.prototype, "hireDate", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "avatar", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "department", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: 'enum',
+        enum: ['active', 'inactive', 'suspended'],
+        default: 'active',
+    }),
+    __metadata("design:type", String)
+], User.prototype, "status", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: 0 }),
+    __metadata("design:type", Number)
+], User.prototype, "projectsCount", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: 0 }),
+    __metadata("design:type", Number)
+], User.prototype, "tasksCompleted", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'timestamp', nullable: true }),
+    __metadata("design:type", Date)
+], User.prototype, "lastActive", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)()
 ], User);

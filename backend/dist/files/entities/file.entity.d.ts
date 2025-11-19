@@ -20,6 +20,16 @@ export declare class File {
     organizationId: number;
     tags: string[];
     preview: string;
+    storageKey: string;
+    checksum: string;
+    mimeType: string;
+    encoding: string;
+    thumbnailUrl: string;
+    previewUrl: string;
+    isScanned: boolean;
+    scanResult: string;
+    metadata: object;
+    version: number;
     createdAt: Date;
     updatedAt: Date;
 }

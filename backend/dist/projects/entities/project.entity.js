@@ -26,6 +26,11 @@ let Project = class Project {
     tasks;
     createdAt;
     updatedAt;
+    priority;
+    progress;
+    dueDate;
+    teamMembers;
+    color;
 };
 exports.Project = Project;
 __decorate([
@@ -67,7 +72,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Project.prototype, "organizationId", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => task_entity_1.Task, task => task.project),
+    (0, typeorm_1.OneToMany)(() => task_entity_1.Task, (task) => task.project),
     __metadata("design:type", Array)
 ], Project.prototype, "tasks", void 0);
 __decorate([
@@ -78,6 +83,30 @@ __decorate([
     (0, typeorm_1.Column)({ default: () => 'CURRENT_TIMESTAMP' }),
     __metadata("design:type", Date)
 ], Project.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: 'enum',
+        enum: ['low', 'medium', 'high'],
+        default: 'medium',
+    }),
+    __metadata("design:type", String)
+], Project.prototype, "priority", void 0);
+__decorate([
+    (0, typeorm_1.Column)('float', { default: 0 }),
+    __metadata("design:type", Number)
+], Project.prototype, "progress", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'date', nullable: true }),
+    __metadata("design:type", Date)
+], Project.prototype, "dueDate", void 0);
+__decorate([
+    (0, typeorm_1.Column)('json', { nullable: true }),
+    __metadata("design:type", Array)
+], Project.prototype, "teamMembers", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Project.prototype, "color", void 0);
 exports.Project = Project = __decorate([
     (0, typeorm_1.Entity)()
 ], Project);

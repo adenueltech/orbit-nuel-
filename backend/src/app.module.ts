@@ -13,6 +13,8 @@ import { FilesModule } from './files/files.module';
 import { SearchModule } from './search/search.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { SettingsModule } from './settings/settings.module';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -48,6 +50,8 @@ import { SettingsModule } from './settings/settings.module';
     SearchModule,
     NotificationsModule,
     SettingsModule,
+    DashboardModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

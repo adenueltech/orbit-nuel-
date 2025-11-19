@@ -33,6 +33,16 @@ let File = class File {
     organizationId;
     tags;
     preview;
+    storageKey;
+    checksum;
+    mimeType;
+    encoding;
+    thumbnailUrl;
+    previewUrl;
+    isScanned;
+    scanResult;
+    metadata;
+    version;
     createdAt;
     updatedAt;
 };
@@ -124,6 +134,50 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], File.prototype, "preview", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], File.prototype, "storageKey", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], File.prototype, "checksum", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], File.prototype, "mimeType", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], File.prototype, "encoding", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], File.prototype, "thumbnailUrl", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], File.prototype, "previewUrl", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], File.prototype, "isScanned", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: 'enum',
+        enum: ['clean', 'infected', 'pending', 'failed'],
+        nullable: true,
+    }),
+    __metadata("design:type", String)
+], File.prototype, "scanResult", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'json', nullable: true }),
+    __metadata("design:type", Object)
+], File.prototype, "metadata", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: 1 }),
+    __metadata("design:type", Number)
+], File.prototype, "version", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: () => 'CURRENT_TIMESTAMP' }),
     __metadata("design:type", Date)

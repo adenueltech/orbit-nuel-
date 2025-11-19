@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Query, Body, UseGuards, Request, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Query,
+  Body,
+  UseGuards,
+  Request,
+  Param,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { SearchService } from './search.service';
 import { SearchQueryDto } from './dto/search-query.dto';
@@ -10,7 +19,10 @@ export class SearchController {
   constructor(private readonly searchService: SearchService) {}
 
   @Get()
-  async search(@Query() queryDto: SearchQueryDto, @Request() req): Promise<SearchResultDto> {
+  async search(
+    @Query() queryDto: SearchQueryDto,
+    @Request() req,
+  ): Promise<SearchResultDto> {
     return this.searchService.search(queryDto, req.user?.id);
   }
 
@@ -24,10 +36,7 @@ export class SearchController {
   }
 
   @Get('history')
-  async getSearchHistory(
-    @Query('limit') limit: number = 20,
-    @Request() req,
-  ) {
+  async getSearchHistory(@Query('limit') limit: number = 20, @Request() req) {
     return this.searchService.getSearchHistory(req.user.id, limit);
   }
 

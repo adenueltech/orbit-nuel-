@@ -24,7 +24,9 @@ export class UsersService {
   }
 
   async findAll(organizationId?: number) {
-    const where = organizationId ? { organization: { id: organizationId } } : {};
+    const where = organizationId
+      ? { organization: { id: organizationId } }
+      : {};
     return this.usersRepository.find({ where, relations: ['organization'] });
   }
 
@@ -47,6 +49,17 @@ export class UsersService {
 
   async updateProfile(id: number, updateProfileDto: UpdateProfileDto) {
     await this.usersRepository.update(id, updateProfileDto);
+    return this.findOne(id);
+  }
+
+  async countByOrganization(organizationId: number) {
+    return this.usersRepository.count({
+      where: { organization: { id: organizationId } },
+    });
+  }
+
+  async updateAvatar(id: number, avatarUrl: string) {
+    await this.usersRepository.update(id, { avatar: avatarUrl });
     return this.findOne(id);
   }
 }

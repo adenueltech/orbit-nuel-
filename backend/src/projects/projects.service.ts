@@ -26,16 +26,22 @@ export class ProjectsService {
     const where = organizationId ? { organizationId } : {};
     return this.projectsRepository.find({
       where,
-      relations: ['owner', 'organization', 'tasks']
+      relations: ['owner', 'organization', 'tasks'],
     });
   }
 
   async findOne(id: number) {
-    return this.projectsRepository.findOne({ where: { id }, relations: ['owner', 'organization', 'tasks'] });
+    return this.projectsRepository.findOne({
+      where: { id },
+      relations: ['owner', 'organization', 'tasks'],
+    });
   }
 
   async update(id: number, updateProjectDto: UpdateProjectDto) {
-    await this.projectsRepository.update(id, { ...updateProjectDto, updatedAt: new Date() });
+    await this.projectsRepository.update(id, {
+      ...updateProjectDto,
+      updatedAt: new Date(),
+    });
     return this.findOne(id);
   }
 
@@ -47,8 +53,45 @@ export class ProjectsService {
     return this.projectsRepository.count({
       where: {
         organizationId,
-        status: Not('completed')
-      }
+        status: Not('completed'),
+      },
     });
+  }
+
+  async findRecent(organizationId: number, limit: number = 4) {
+    return this.projectsRepository.find({
+      where: { organizationId },
+      order: { createdAt: 'DESC' },
+      take: limit,
+      relations: ['owner'],
+    });
+  }
+
+  async getStatusDistribution(organizationId: number) {
+    const result = await this.projectsRepository
+      .createQueryBuilder('project')
+      .select('project.status', 'status')
+      .addSelect('COUNT(*)', 'count')
+      .where('project.organizationId = :organizationId', { organizationId })
+      .groupBy('project.status')
+      .getRawMany();
+
+    const total = result.reduce((sum, item) => sum + parseInt(item.count), 0);
+
+    return result.map((item) => ({
+      name: item.status || 'Unknown',
+      value: Math.round((parseInt(item.count) / total) * 100),
+      color: this.getStatusColor(item.status),
+    }));
+  }
+
+  private getStatusColor(status: string): string {
+    const colors = {
+      active: '#10b981',
+      planning: '#f59e0b',
+      completed: '#6b7280',
+      'on-hold': '#ef4444',
+    };
+    return colors[status] || '#6b7280';
   }
 }

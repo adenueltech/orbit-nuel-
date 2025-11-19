@@ -19,7 +19,13 @@ export class UpdateSettingsDto {
   @IsOptional()
   companyIndustry?: string;
 
-  @IsIn(['1-10 employees', '11-50 employees', '51-200 employees', '201-500 employees', '500+ employees'])
+  @IsIn([
+    '1-10 employees',
+    '11-50 employees',
+    '51-200 employees',
+    '201-500 employees',
+    '500+ employees',
+  ])
   @IsOptional()
   companySize?: string;
 

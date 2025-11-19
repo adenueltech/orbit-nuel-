@@ -39,7 +39,12 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = { email: user.email, sub: user.id, role: user.role, organizationId: user.organizationId };
+    const payload = {
+      email: user.email,
+      sub: user.id,
+      role: user.role,
+      organizationId: user.organizationId,
+    };
     return {
       access_token: this.jwtService.sign(payload),
       user,
@@ -51,7 +56,9 @@ export class AuthService {
       // Create organization first
       const createOrgDto = {
         name: createUserDto.company,
-        subdomain: createUserDto.email.split('@')[1].split('.').slice(0,2).join('') + Math.random().toString(36).substring(7),
+        subdomain:
+          createUserDto.email.split('@')[1].split('.').slice(0, 2).join('') +
+          Math.random().toString(36).substring(7),
       };
       const organization = await this.organizationsService.create(createOrgDto);
       createUserDto.organizationId = organization.id;

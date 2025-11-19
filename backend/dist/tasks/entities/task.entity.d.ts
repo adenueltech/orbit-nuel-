@@ -16,4 +16,15 @@ export declare class Task {
     dueDate: Date;
     createdAt: Date;
     updatedAt: Date;
+    comments: {
+        text: string;
+        author: string;
+        timestamp: Date;
+    }[];
+    attachments: {
+        filename: string;
+        url: string;
+        uploadedAt: Date;
+    }[];
+    tags: string[];
 }

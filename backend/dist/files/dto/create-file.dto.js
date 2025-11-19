@@ -24,6 +24,16 @@ class CreateFileDto {
     permissions = 'view';
     tags = [];
     preview;
+    storageKey;
+    checksum;
+    mimeType;
+    encoding;
+    thumbnailUrl;
+    previewUrl;
+    isScanned = false;
+    scanResult;
+    metadata;
+    version = 1;
 }
 exports.CreateFileDto = CreateFileDto;
 __decorate([
@@ -84,4 +94,53 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], CreateFileDto.prototype, "preview", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateFileDto.prototype, "storageKey", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateFileDto.prototype, "checksum", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateFileDto.prototype, "mimeType", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateFileDto.prototype, "encoding", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateFileDto.prototype, "thumbnailUrl", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateFileDto.prototype, "previewUrl", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateFileDto.prototype, "isScanned", void 0);
+__decorate([
+    (0, class_validator_1.IsEnum)(['clean', 'infected', 'pending', 'failed']),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateFileDto.prototype, "scanResult", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], CreateFileDto.prototype, "metadata", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateFileDto.prototype, "version", void 0);
 //# sourceMappingURL=create-file.dto.js.map

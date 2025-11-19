@@ -5,7 +5,7 @@ export declare class ProjectsController {
     private readonly projectsService;
     constructor(projectsService: ProjectsService);
     create(createProjectDto: CreateProjectDto): Promise<import("./entities/project.entity").Project>;
-    findAll(): Promise<import("./entities/project.entity").Project[]>;
+    findAll(req: any): Promise<import("./entities/project.entity").Project[]>;
     getOverviewStats(): Promise<{
         activeProjects: number;
     }>;

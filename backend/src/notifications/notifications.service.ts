@@ -1,8 +1,15 @@
-import { Injectable, Inject, Logger } from '@nestjs/common';
+import { Injectable, Inject, Logger, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Notification, NotificationType, NotificationPriority } from './entities/notification.entity';
-import { NotificationPreference, NotificationChannel } from './entities/notification-preference.entity';
+import { Repository, LessThan } from 'typeorm';
+import {
+  Notification,
+  NotificationType,
+  NotificationPriority,
+} from './entities/notification.entity';
+import {
+  NotificationPreference,
+  NotificationChannel,
+} from './entities/notification-preference.entity';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { NotificationsGateway } from './gateways/notifications.gateway';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -16,16 +23,20 @@ export class NotificationsService {
     private notificationRepository: Repository<Notification>,
     @InjectRepository(NotificationPreference)
     private preferenceRepository: Repository<NotificationPreference>,
+    @Inject(forwardRef(() => NotificationsGateway))
     private notificationsGateway: NotificationsGateway,
   ) {}
 
-  async create(createNotificationDto: CreateNotificationDto): Promise<Notification> {
+  async create(
+    createNotificationDto: CreateNotificationDto,
+  ): Promise<Notification> {
     const notification = this.notificationRepository.create({
       ...createNotificationDto,
       priority: createNotificationDto.priority || NotificationPriority.MEDIUM,
     });
 
-    const savedNotification = await this.notificationRepository.save(notification);
+    const savedNotification =
+      await this.notificationRepository.save(notification);
 
     // Send real-time notification via WebSocket
     await this.notificationsGateway.sendNotificationToUser(
@@ -33,7 +44,9 @@ export class NotificationsService {
       savedNotification,
     );
 
-    this.logger.log(`Notification created and sent to user ${createNotificationDto.userId}`);
+    this.logger.log(
+      `Notification created and sent to user ${createNotificationDto.userId}`,
+    );
     return savedNotification;
   }
 
@@ -121,7 +134,7 @@ export class NotificationsService {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     const result = await this.notificationRepository.delete({
-      createdAt: { $lt: thirtyDaysAgo } as any,
+      createdAt: LessThan(thirtyDaysAgo),
     });
 
     this.logger.log(`Cleaned up ${result.affected} old notifications`);

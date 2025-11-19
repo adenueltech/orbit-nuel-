@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '@/lib/api-client';
 import { useOrganization } from '@/lib/contexts/organization-context';
 
@@ -20,6 +20,25 @@ export interface FileItem {
   project?: string;
   tags: string[];
   preview?: string;
+}
+
+export interface CreateFileData {
+  name: string;
+  type?: string;
+  projectId?: number;
+  organizationId?: number;
+}
+
+export interface UpdateFileData {
+  name?: string;
+  shared?: boolean;
+  starred?: boolean;
+  projectId?: number;
+}
+
+export interface UploadFileData {
+  file: File;
+  projectId?: number;
 }
 
 export const useFiles = () => {
@@ -52,5 +71,80 @@ export const useFiles = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 3,
     enabled: !!organizationId,
+  });
+};
+
+export const useCreateFile = () => {
+  const queryClient = useQueryClient();
+  const { organizationId } = useOrganization();
+
+  return useMutation({
+    mutationFn: async (data: CreateFileData) => {
+      const response = await apiClient.post('/files', {
+        ...data,
+        organizationId,
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['files', organizationId] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', organizationId] });
+    },
+  });
+};
+
+export const useUpdateFile = () => {
+  const queryClient = useQueryClient();
+  const { organizationId } = useOrganization();
+
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: UpdateFileData }) => {
+      const response = await apiClient.patch(`/files/${id}`, data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['files', organizationId] });
+    },
+  });
+};
+
+export const useDeleteFile = () => {
+  const queryClient = useQueryClient();
+  const { organizationId } = useOrganization();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await apiClient.delete(`/files/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['files', organizationId] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', organizationId] });
+    },
+  });
+};
+
+export const useUploadFile = () => {
+  const queryClient = useQueryClient();
+  const { organizationId } = useOrganization();
+
+  return useMutation({
+    mutationFn: async (data: UploadFileData) => {
+      const formData = new FormData();
+      formData.append('file', data.file);
+      if (data.projectId) {
+        formData.append('projectId', data.projectId.toString());
+      }
+
+      const response = await apiClient.post('/files/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['files', organizationId] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', organizationId] });
+    },
   });
 };

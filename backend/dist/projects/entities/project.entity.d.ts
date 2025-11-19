@@ -13,4 +13,9 @@ export declare class Project {
     tasks: Task[];
     createdAt: Date;
     updatedAt: Date;
+    priority: string;
+    progress: number;
+    dueDate: Date;
+    teamMembers: number[];
+    color: string;
 }

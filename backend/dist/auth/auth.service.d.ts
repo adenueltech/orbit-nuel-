@@ -9,6 +9,7 @@ export interface JwtPayload {
     email: string;
     sub: number;
     role: string;
+    organizationId: number;
 }
 export declare class AuthService {
     private usersService;

@@ -45,7 +45,9 @@ export class SettingsService {
     };
   }
 
-  async findByOrganizationId(organizationId: number): Promise<SettingsResponseDto | null> {
+  async findByOrganizationId(
+    organizationId: number,
+  ): Promise<SettingsResponseDto | null> {
     const settings = await this.settingsRepository.findOne({
       where: { organization: { id: organizationId } },
       relations: ['user', 'organization'],
@@ -78,15 +80,23 @@ export class SettingsService {
     };
   }
 
-  async createDefaultSettings(userId: number, organizationId?: number): Promise<Settings> {
+  async createDefaultSettings(
+    userId: number,
+    organizationId?: number,
+  ): Promise<Settings> {
     const settings = this.settingsRepository.create({
       user: { id: userId } as any,
-      organization: organizationId ? { id: organizationId } as any : undefined,
+      organization: organizationId
+        ? ({ id: organizationId } as any)
+        : undefined,
     });
     return this.settingsRepository.save(settings);
   }
 
-  async update(userId: number, updateSettingsDto: UpdateSettingsDto): Promise<SettingsResponseDto> {
+  async update(
+    userId: number,
+    updateSettingsDto: UpdateSettingsDto,
+  ): Promise<SettingsResponseDto> {
     let settings = await this.settingsRepository.findOne({
       where: { user: { id: userId } },
     });
@@ -105,7 +115,10 @@ export class SettingsService {
     return updatedSettings;
   }
 
-  async updateOrganizationSettings(organizationId: number, updateSettingsDto: UpdateSettingsDto): Promise<SettingsResponseDto> {
+  async updateOrganizationSettings(
+    organizationId: number,
+    updateSettingsDto: UpdateSettingsDto,
+  ): Promise<SettingsResponseDto> {
     let settings = await this.settingsRepository.findOne({
       where: { organization: { id: organizationId } },
     });
@@ -120,7 +133,9 @@ export class SettingsService {
     const updatedSettings = await this.findByOrganizationId(organizationId);
 
     if (!updatedSettings) {
-      throw new NotFoundException('Organization settings not found after update');
+      throw new NotFoundException(
+        'Organization settings not found after update',
+      );
     }
 
     return updatedSettings;

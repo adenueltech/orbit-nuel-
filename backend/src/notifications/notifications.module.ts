@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 import { NotificationsService } from './notifications.service';
@@ -17,7 +17,8 @@ import { NotificationPreference } from './entities/notification-preference.entit
     NotificationsService,
     {
       provide: NotificationsGateway,
-      useFactory: (notificationsService: NotificationsService) => new NotificationsGateway(notificationsService),
+      useFactory: (notificationsService: NotificationsService) =>
+        new NotificationsGateway(notificationsService),
       inject: [NotificationsService],
     },
   ],

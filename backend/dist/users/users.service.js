@@ -31,8 +31,11 @@ let UsersService = class UsersService {
         });
         return this.usersRepository.save(user);
     }
-    async findAll() {
-        return this.usersRepository.find();
+    async findAll(organizationId) {
+        const where = organizationId
+            ? { organization: { id: organizationId } }
+            : {};
+        return this.usersRepository.find({ where, relations: ['organization'] });
     }
     async findOne(id) {
         return this.usersRepository.findOne({ where: { id } });
@@ -46,6 +49,19 @@ let UsersService = class UsersService {
     }
     async remove(id) {
         return this.usersRepository.delete(id);
+    }
+    async updateProfile(id, updateProfileDto) {
+        await this.usersRepository.update(id, updateProfileDto);
+        return this.findOne(id);
+    }
+    async countByOrganization(organizationId) {
+        return this.usersRepository.count({
+            where: { organization: { id: organizationId } },
+        });
+    }
+    async updateAvatar(id, avatarUrl) {
+        await this.usersRepository.update(id, { avatar: avatarUrl });
+        return this.findOne(id);
     }
 };
 exports.UsersService = UsersService;

@@ -33,7 +33,7 @@ __decorate([
     __metadata("design:type", String)
 ], Organization.prototype, "subdomain", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => user_entity_1.User, user => user.organization),
+    (0, typeorm_1.OneToMany)(() => user_entity_1.User, (user) => user.organization),
     __metadata("design:type", Array)
 ], Organization.prototype, "users", void 0);
 __decorate([

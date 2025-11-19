@@ -15,7 +15,7 @@ export class TenantMiddleware implements NestMiddleware {
     const subdomain = host.split('.')[0];
     req['tenant'] = {
       subdomain,
-      organizationId: organizationId ? parseInt(organizationId) : null
+      organizationId: organizationId ? parseInt(organizationId) : null,
     };
     next();
   }

@@ -32,7 +32,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         if (!user) {
             return null;
         }
-        return user;
+        return { ...user, organizationId: payload.organizationId };
     }
 };
 exports.JwtStrategy = JwtStrategy;

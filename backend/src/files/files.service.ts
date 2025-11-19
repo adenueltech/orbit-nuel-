@@ -5,7 +5,7 @@ import { File } from './entities/file.entity';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { UploadFileDto } from './dto/upload-file.dto';
-import { User } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
 import * as multer from 'multer';
 import * as AWS from 'aws-sdk';
 import * as sharp from 'sharp';
@@ -23,15 +23,17 @@ export class FilesService {
   constructor(
     @InjectRepository(File)
     private filesRepository: Repository<File>,
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    private usersService: UsersService,
     private configService: ConfigService,
   ) {
-    this.isProduction = this.configService.get<string>('NODE_ENV') === 'production';
+    this.isProduction =
+      this.configService.get<string>('NODE_ENV') === 'production';
     if (this.isProduction) {
       this.s3 = new AWS.S3({
         accessKeyId: this.configService.get<string>('AWS_ACCESS_KEY_ID'),
-        secretAccessKey: this.configService.get<string>('AWS_SECRET_ACCESS_KEY'),
+        secretAccessKey: this.configService.get<string>(
+          'AWS_SECRET_ACCESS_KEY',
+        ),
         region: this.configService.get<string>('AWS_REGION'),
       });
     }
@@ -141,10 +143,16 @@ export class FilesService {
   private validateFile(file: Express.Multer.File): void {
     const maxSize = 50 * 1024 * 1024; // 50MB
     const allowedTypes = [
-      'image/jpeg', 'image/png', 'image/gif', 'image/webp',
-      'application/pdf', 'text/plain', 'application/msword',
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'application/pdf',
+      'text/plain',
+      'application/msword',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     ];
 
     if (file.size > maxSize) {
@@ -165,7 +173,11 @@ export class FilesService {
     previewUrl?: string;
     metadata: object;
   }> {
-    const result: { thumbnailUrl?: string; previewUrl?: string; metadata: object } = { metadata: {} };
+    const result: {
+      thumbnailUrl?: string;
+      previewUrl?: string;
+      metadata: object;
+    } = { metadata: {} };
 
     if (file.mimetype.startsWith('image/')) {
       try {
@@ -179,7 +191,10 @@ export class FilesService {
           .jpeg({ quality: 80 })
           .toBuffer();
 
-        result.thumbnailUrl = await this.storeProcessedFile(thumbnailBuffer, 'thumbnail.jpg');
+        result.thumbnailUrl = await this.storeProcessedFile(
+          thumbnailBuffer,
+          'thumbnail.jpg',
+        );
 
         // Generate preview
         const previewBuffer = await image
@@ -187,7 +202,10 @@ export class FilesService {
           .jpeg({ quality: 85 })
           .toBuffer();
 
-        result.previewUrl = await this.storeProcessedFile(previewBuffer, 'preview.jpg');
+        result.previewUrl = await this.storeProcessedFile(
+          previewBuffer,
+          'preview.jpg',
+        );
       } catch (error) {
         this.logger.error('Error processing image', error);
       }
@@ -196,7 +214,10 @@ export class FilesService {
     return result;
   }
 
-  private async storeFile(file: Express.Multer.File, organizationId: number): Promise<string> {
+  private async storeFile(
+    file: Express.Multer.File,
+    organizationId: number,
+  ): Promise<string> {
     const storageKey = `org-${organizationId}/${Date.now()}-${file.originalname}`;
 
     if (this.isProduction) {
@@ -204,16 +225,22 @@ export class FilesService {
       if (!bucket) {
         throw new BadRequestException('AWS S3 bucket not configured');
       }
-      await this.s3.upload({
-        Bucket: bucket,
-        Key: storageKey,
-        Body: file.buffer,
-        ContentType: file.mimetype,
-        ACL: 'private',
-      }).promise();
+      await this.s3
+        .upload({
+          Bucket: bucket,
+          Key: storageKey,
+          Body: file.buffer,
+          ContentType: file.mimetype,
+          ACL: 'private',
+        })
+        .promise();
     } else {
       // Local storage fallback
-      const uploadDir = path.join(process.cwd(), 'uploads', organizationId.toString());
+      const uploadDir = path.join(
+        process.cwd(),
+        'uploads',
+        organizationId.toString(),
+      );
       if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
       }
@@ -224,7 +251,10 @@ export class FilesService {
     return storageKey;
   }
 
-  private async storeProcessedFile(buffer: Buffer, filename: string): Promise<string> {
+  private async storeProcessedFile(
+    buffer: Buffer,
+    filename: string,
+  ): Promise<string> {
     const storageKey = `processed/${Date.now()}-${filename}`;
 
     if (this.isProduction) {
@@ -232,13 +262,15 @@ export class FilesService {
       if (!bucket) {
         throw new BadRequestException('AWS S3 bucket not configured');
       }
-      await this.s3.upload({
-        Bucket: bucket,
-        Key: storageKey,
-        Body: buffer,
-        ContentType: 'image/jpeg',
-        ACL: 'private',
-      }).promise();
+      await this.s3
+        .upload({
+          Bucket: bucket,
+          Key: storageKey,
+          Body: buffer,
+          ContentType: 'image/jpeg',
+          ACL: 'private',
+        })
+        .promise();
     } else {
       const uploadDir = path.join(process.cwd(), 'uploads', 'processed');
       if (!fs.existsSync(uploadDir)) {
@@ -265,7 +297,7 @@ export class FilesService {
     // In a real implementation, integrate with antivirus service
     try {
       // Simulate scan
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       await this.filesRepository.update(fileId, {
         isScanned: true,
@@ -279,13 +311,17 @@ export class FilesService {
     }
   }
 
-  async uploadAvatar(file: Express.Multer.File, userId: number): Promise<{ avatarUrl: string }> {
+  async uploadAvatar(
+    file: Express.Multer.File,
+    userId: number,
+  ): Promise<{ avatarUrl: string }> {
     // Validate file
     if (!file.mimetype.startsWith('image/')) {
       throw new BadRequestException('Only image files are allowed');
     }
 
-    if (file.size > 1024 * 1024) { // 1MB
+    if (file.size > 1024 * 1024) {
+      // 1MB
       throw new BadRequestException('File size must be less than 1MB');
     }
 
@@ -303,13 +339,15 @@ export class FilesService {
       if (!bucket) {
         throw new BadRequestException('AWS S3 bucket not configured');
       }
-      await this.s3.upload({
-        Bucket: bucket,
-        Key: storageKey,
-        Body: processedBuffer,
-        ContentType: 'image/jpeg',
-        ACL: 'public-read', // Avatars should be public
-      }).promise();
+      await this.s3
+        .upload({
+          Bucket: bucket,
+          Key: storageKey,
+          Body: processedBuffer,
+          ContentType: 'image/jpeg',
+          ACL: 'public-read', // Avatars should be public
+        })
+        .promise();
     } else {
       // Local storage fallback
       const uploadDir = path.join(process.cwd(), 'uploads', 'avatars');
@@ -325,8 +363,14 @@ export class FilesService {
       ? `https://${this.configService.get<string>('AWS_S3_BUCKET')}.s3.amazonaws.com/${storageKey}`
       : `/uploads/avatars/${path.basename(storageKey)}`;
 
-    await this.usersRepository.update(userId, { avatar: avatarUrl });
+    await this.usersService.updateAvatar(userId, avatarUrl);
 
     return { avatarUrl };
+  }
+
+  async countByOrganization(organizationId: number) {
+    return this.filesRepository.count({
+      where: { organizationId },
+    });
   }
 }

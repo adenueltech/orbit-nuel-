@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '@/lib/api-client';
 import { useOrganization } from '@/lib/contexts/organization-context';
 
@@ -14,6 +14,23 @@ export interface Project {
   team: any[];
   tasks: { total: number; completed: number };
   color: string;
+}
+
+export interface CreateProjectData {
+  title: string;
+  description?: string;
+  status?: string;
+  priority?: string;
+  dueDate?: string;
+  organizationId?: number;
+}
+
+export interface UpdateProjectData {
+  title?: string;
+  description?: string;
+  status?: string;
+  priority?: string;
+  dueDate?: string;
 }
 
 export const useProjects = () => {
@@ -40,5 +57,55 @@ export const useProjects = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 3,
     enabled: !!organizationId,
+  });
+};
+
+export const useCreateProject = () => {
+  const queryClient = useQueryClient();
+  const { organizationId } = useOrganization();
+
+  return useMutation({
+    mutationFn: async (data: CreateProjectData) => {
+      const response = await apiClient.post('/projects', {
+        ...data,
+        organizationId,
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects', organizationId] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', organizationId] });
+    },
+  });
+};
+
+export const useUpdateProject = () => {
+  const queryClient = useQueryClient();
+  const { organizationId } = useOrganization();
+
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: UpdateProjectData }) => {
+      const response = await apiClient.patch(`/projects/${id}`, data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects', organizationId] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', organizationId] });
+    },
+  });
+};
+
+export const useDeleteProject = () => {
+  const queryClient = useQueryClient();
+  const { organizationId } = useOrganization();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await apiClient.delete(`/projects/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects', organizationId] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', organizationId] });
+    },
   });
 };
